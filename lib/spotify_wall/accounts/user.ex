@@ -5,19 +5,16 @@ defmodule SpotifyWall.Accounts.User do
   schema "users" do
     field :nickname, :string
     field :token, :string
+    field :refresh_token, :string
+    field :expires_at, UnixTimestamp
 
     timestamps()
   end
 
-  @spec changeset(
-          {map, map} | %{:__struct__ => atom | %{__changeset__: map}, optional(atom) => any},
-          :invalid | %{optional(:__struct__) => none, optional(atom | binary) => any}
-        ) :: Ecto.Changeset.t()
-  @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:nickname, :token])
-    |> validate_required([:nickname, :token])
+    |> cast(attrs, [:nickname, :token, :refresh_token, :expires_at])
+    |> validate_required([:nickname, :token, :refresh_token, :expires_at])
     |> unique_constraint(:nickname)
   end
 end

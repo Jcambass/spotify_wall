@@ -9,6 +9,6 @@ defmodule SpotifyWall.Repo.Migrations.CreateUsers do
       timestamps()
     end
 
-    unique_index(:users, :nickname)
+    create unique_index(:users, :nickname)
   end
 end
