@@ -50,7 +50,8 @@ defmodule SpotifyWall.MixProject do
       {:ueberauth, "~> 0.6"},
       {:ueberauth_spotify, "0.2.0"},
       {:tesla, "~> 1.3.0"},
-      {:oban, "~> 2.1"}
+      {:oban, "~> 2.1"},
+      {:poolboy, "~> 1.5"}
     ]
   end
 

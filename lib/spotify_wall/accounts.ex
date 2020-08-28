@@ -13,6 +13,8 @@ defmodule SpotifyWall.Accounts do
 
   def get_user!(id), do: Repo.get!(User, id)
 
+  def get_user_by_nickname!(nickname), do: Repo.get_by!(User, nickname: nickname)
+
   def upsert_user(nickname, token, refresh_token, expires_at) do
     attrs = %{
       nickname: nickname,

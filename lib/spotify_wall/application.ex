@@ -17,7 +17,10 @@ defmodule SpotifyWall.Application do
       SpotifyWallWeb.Endpoint,
       # Start a worker by calling: SpotifyWall.Worker.start_link(arg)
       # {SpotifyWall.Worker, arg},
-      {Oban, oban_config()}
+      {Oban, oban_config()},
+      Spotify.ProcessRegistry,
+      Spotify.Client,
+      Spotify.Cache,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

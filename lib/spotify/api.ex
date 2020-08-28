@@ -1,4 +1,4 @@
-defmodule SpotifyWall.Spotify do
+defmodule Spotify.API do
   use Tesla
 
   plug Tesla.Middleware.DecodeJson
