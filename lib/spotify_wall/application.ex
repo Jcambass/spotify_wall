@@ -14,9 +14,10 @@ defmodule SpotifyWall.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: SpotifyWall.PubSub},
       # Start the Endpoint (http/https)
-      SpotifyWallWeb.Endpoint
+      SpotifyWallWeb.Endpoint,
       # Start a worker by calling: SpotifyWall.Worker.start_link(arg)
-      # {SpotifyWall.Worker, arg}
+      # {SpotifyWall.Worker, arg},
+      {Oban, oban_config()}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -30,5 +31,10 @@ defmodule SpotifyWall.Application do
   def config_change(changed, _new, removed) do
     SpotifyWallWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  # Conditionally disable crontab, queues, or plugins here.
+  defp oban_config do
+    Application.get_env(:spotify_wall, Oban)
   end
 end

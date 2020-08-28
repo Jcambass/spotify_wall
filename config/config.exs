@@ -28,12 +28,20 @@ config :phoenix, :json_library, Jason
 
 config :ueberauth, Ueberauth,
   providers: [
-    spotify: { Ueberauth.Strategy.Spotify, [default_scope: "user-read-currently-playing"] }
+    spotify: {Ueberauth.Strategy.Spotify, [default_scope: "user-read-currently-playing"]}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Spotify.OAuth,
-   client_id: System.get_env("SPOTIFY_CLIENT_ID"),
-   client_secret: System.get_env("SPOTIFY_CLIENT_SECRET")
+  client_id: System.get_env("SPOTIFY_CLIENT_ID"),
+  client_secret: System.get_env("SPOTIFY_CLIENT_SECRET")
+
+config :spotify_wall, Oban,
+  repo: SpotifyWall.Repo,
+  plugins: [Oban.Plugins.Pruner],
+  queues: [critical: 10, cluster: 20],
+  crontab: [
+    {"*/10 * * * *", SpotifyWall.Workers.RefreshTokens}
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

@@ -8,7 +8,7 @@ defmodule SpotifyWall.Accounts.User do
     field :refresh_token, :string
     field :expires_at, UnixTimestamp
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(user, attrs) do

@@ -10,10 +10,21 @@ defmodule SpotifyWallWeb.AccountConnectionController do
     |> redirect(to: "/")
   end
 
-  def callback(%{assigns: %{ueberauth_auth: %{credentials: %{token: token, refresh_token: refresh_token, expires_at: expires_at}, info: %{nickname: nickname}}}} = conn, _params) do
+  def callback(
+        %{
+          assigns: %{
+            ueberauth_auth: %{
+              credentials: %{token: token, refresh_token: refresh_token, expires_at: expires_at},
+              info: %{nickname: nickname}
+            }
+          }
+        } = conn,
+        _params
+      ) do
     # TODO: This is probably quite insecure!
     # TODO: Add periodic job to refresh tokens!
     user = Accounts.upsert_user(nickname, token, refresh_token, expires_at)
+
     conn
     |> put_flash(:info, "Successfully authenticated. #{user.token}")
     |> redirect(to: "/")

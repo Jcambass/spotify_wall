@@ -49,7 +49,8 @@ defmodule SpotifyWall.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:ueberauth, "~> 0.6"},
       {:ueberauth_spotify, "0.2.0"},
-      {:tesla, "~> 1.3.0"}
+      {:tesla, "~> 1.3.0"},
+      {:oban, "~> 2.1"}
     ]
   end
 
