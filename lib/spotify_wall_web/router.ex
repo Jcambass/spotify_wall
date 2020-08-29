@@ -8,6 +8,7 @@ defmodule SpotifyWallWeb.Router do
     plug :put_root_layout, {SpotifyWallWeb.LayoutView, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug SpotifyWallWeb.Auth
   end
 
   pipeline :api do
@@ -17,6 +18,7 @@ defmodule SpotifyWallWeb.Router do
   scope "/", SpotifyWallWeb do
     pipe_through :browser
 
+    # TODO: Rename me!
     live "/", PageLive, :index
   end
 
@@ -28,7 +30,19 @@ defmodule SpotifyWallWeb.Router do
     post "/:provider/callback", AccountConnectionController, :callback
   end
 
-  # Other scopes may use custom stacks.
+  scope "/account", SpotifyWallWeb do
+    pipe_through :browser
+
+    get "/", AccountConnectionController, :show
+    delete "/", AccountConnectionController, :delete
+  end
+
+  scope "/session", SpotifyWallWeb do
+    pipe_through :browser
+
+    delete "/", SessionController, :delete
+  end
+
   # scope "/api", SpotifyWallWeb do
   #   pipe_through :api
   # end

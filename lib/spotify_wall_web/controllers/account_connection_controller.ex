@@ -25,7 +25,11 @@ defmodule SpotifyWallWeb.AccountConnectionController do
     user = Accounts.upsert_user(nickname, token, refresh_token, expires_at)
 
     conn
-    |> put_flash(:info, "Successfully authenticated. #{user.token}")
+    |> SpotifyWallWeb.Auth.login(user)
+    |> put_flash(:info, "Successfully authenticated.")
     |> redirect(to: "/")
   end
+
+  # TODO: Add logout feature
+  # TODO: Add account deletion feature
 end

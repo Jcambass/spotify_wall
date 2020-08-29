@@ -6,6 +6,7 @@ defmodule SpotifyWallWeb.PageLive do
   def mount(_params, _session, socket) do
     users = Accounts.list_users()
     |> Enum.map(fn u -> {u, get_activity(u)} end)
+    |> Enum.filter(fn {_u, activity} -> activity end)
 
     {:ok, assign(socket, users: users)}
   end

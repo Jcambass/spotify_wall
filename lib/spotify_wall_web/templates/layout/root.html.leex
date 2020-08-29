@@ -10,6 +10,37 @@
     <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
   <body class="bg-gray-900">
-    <%= @inner_content %>
+    <div class="bg-gray-900 h-screen">
+      <div class="mx-auto py-12 px-4 max-w-screen-xl sm:px-6 lg:px-8 lg:py-24">
+        <div class="space-y-12">
+          <div class="md:flex md:items-center md:justify-between">
+            <div class="flex-1 min-w-0">
+              <h2 class="text-3xl font-bold leading-7 text-white sm:text-3xl sm:leading-9 sm:truncate">
+                Spotify Wall
+              </h2>
+            </div>
+            <div class="mt-4 flex md:mt-0 md:ml-4">
+              <span class="shadow-sm rounded-md">
+                <span class="inline-flex rounded-md shadow-sm">
+                  <%= if @current_user do %>
+                    <span class="relative z-0 inline-flex shadow-sm rounded-md">
+                      <%= button(to: "/", class: "relative inline-flex items-center px-4 py-2 rounded-l-md border border-transparent text-white bg-gray-600 hover:bg-gray-500 focus:border-gray-700 active:bg-gray-700 text-sm leading-5 font-medium focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150") do %>
+                        <svg class="-ml-1 -mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                        </svg>
+                        <% end %>
+                      <%= button("Log out", to: Routes.session_path(@conn, :delete), method: :delete, class: "ml-px relative inline-flex items-center px-3 py-2 rounded-r-md border border-transparent text-white bg-gray-600 hover:bg-gray-500 active:bg-gray-700 text-sm leading-5 font-medium focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150") %>
+                    </span>
+                  <% else %>
+                    <%= button("Sign in", to: "/auth/spotify", method: :get, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:shadow-outline-gray focus:border-gray-700 active:bg-gray-700 transition duration-150 ease-in-out") %>
+                  <% end %>
+                </span>
+              </span>
+            </div>
+          </div>
+          <%= @inner_content %>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

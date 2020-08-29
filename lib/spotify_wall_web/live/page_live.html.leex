@@ -1,27 +1,11 @@
-<div class="bg-gray-900 h-screen">
-  <div class="mx-auto py-12 px-4 max-w-screen-xl sm:px-6 lg:px-8 lg:py-24">
-    <div class="space-y-12">
-      <div class="md:flex md:items-center md:justify-between">
-        <div class="flex-1 min-w-0">
-          <h2 class="text-3xl font-bold leading-7 text-white sm:text-3xl sm:leading-9 sm:truncate">
-            Spotify Wall
-          </h2>
-        </div>
-        <div class="mt-4 flex md:mt-0 md:ml-4">
-          <span class="shadow-sm rounded-md">
-            <span class="inline-flex rounded-md shadow-sm">
-              <%= button("Connect", to: "/auth/spotify", method: :get, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:shadow-outline-gray focus:border-gray-700 active:bg-gray-700 transition duration-150 ease-in-out") %>
-            </span>
-          </span>
-        </div>
-      </div>
-      <ul class="space-y-4 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0 lg:grid-cols-3 lg:gap-8">
-        <%= for {user, activity} <- @users do %>
-          <%= if activity do %>
-            <%= live_component @socket, SpotifyWallWeb.AudioTileComponent, id: user.id, user: user, activity: activity %>
-          <% end %>
-        <% end %>
-      </ul>
-    </div>
-  </div>
-</div>
+<ul class="space-y-4 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0 lg:grid-cols-3 lg:gap-8">
+  <%= if Enum.empty?(@users) do %>
+    Nobody is listening..
+  <% else %>
+    <%= for {user, activity} <- @users do %>
+      <%= if activity do %>
+        <%= live_component @socket, SpotifyWallWeb.AudioTileComponent, id: user.id, user: user, activity: activity %>
+      <% end %>
+    <% end %>
+  <% end %>
+</ul>
