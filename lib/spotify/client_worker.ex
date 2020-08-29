@@ -2,7 +2,7 @@ defmodule Spotify.ClientWorker do
   use GenServer
 
   def start_link(worker_id) do
-    IO.puts "Starting Spotify Client worker #{worker_id}"
+    IO.puts("Starting Spotify Client worker #{worker_id}")
     GenServer.start_link(__MODULE__, [])
   end
 
@@ -15,6 +15,7 @@ defmodule Spotify.ClientWorker do
     {:ok, []}
   end
 
+  @impl GenServer
   def handle_call({:get_activity, token}, _from, state) do
     data = Spotify.API.current_activity(token)
 

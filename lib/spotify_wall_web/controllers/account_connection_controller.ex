@@ -22,7 +22,6 @@ defmodule SpotifyWallWeb.AccountConnectionController do
         _params
       ) do
     # TODO: This is probably quite insecure!
-    # TODO: Add periodic job to refresh tokens!
     user = Accounts.upsert_user(nickname, token, refresh_token, expires_at)
 
     conn

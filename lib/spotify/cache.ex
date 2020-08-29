@@ -1,6 +1,6 @@
 defmodule Spotify.Cache do
   def start_link() do
-    IO.puts "Starting Spotify Cache."
+    IO.puts("Starting Spotify Cache.")
     DynamicSupervisor.start_link(name: __MODULE__, strategy: :one_for_one)
   end
 
@@ -12,14 +12,14 @@ defmodule Spotify.Cache do
     }
   end
 
-  def user_process(nickname, token) do
-    case start_child(nickname, token) do
+  def user_process(nickname) do
+    case start_child(nickname) do
       {:ok, pid} -> pid
       {:error, {:already_started, pid}} -> pid
     end
   end
 
-  defp start_child(nickname, token) do
-    DynamicSupervisor.start_child(__MODULE__, {Spotify.User, {nickname, token}})
+  defp start_child(nickname) do
+    DynamicSupervisor.start_child(__MODULE__, {Spotify.User, nickname})
   end
 end

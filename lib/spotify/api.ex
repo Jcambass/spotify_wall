@@ -4,6 +4,8 @@ defmodule Spotify.API do
   plug Tesla.Middleware.DecodeJson
   plug Tesla.Middleware.FormUrlencoded
 
+  alias Spotify.Activity
+
   def refresh_access_token(refresh_token) do
     auth = build_auth()
 
@@ -14,11 +16,12 @@ defmodule Spotify.API do
         headers: [{"Authorization", "Basic #{auth}"}]
       )
 
-      %{"access_token" => token, "expires_in" => expires_in} = body
+    %{"access_token" => token, "expires_in" => expires_in} = body
 
-      {token, expires_in}
+    {token, expires_in}
   end
 
+  # TODO: Handle rate limiting
   def current_activity(token) do
     {:ok, %{body: body}} =
       get("https://api.spotify.com/v1/me/player/currently-playing",
@@ -45,6 +48,20 @@ defmodule Spotify.API do
          "name" => track_name,
          "external_urls" => %{"spotify" => spotify_url}
        }) do
-    track_name
+    image = Map.get(List.first(images), "url")
+
+    artists =
+      artists
+      |> Enum.map(fn a -> Map.get(a, "name") end)
+      |> Enum.join(", ")
+
+    %Activity{
+      track: track_name,
+      album: album_name,
+      image: image,
+      artists: artists,
+      url: spotify_url,
+      preview: preview_url
+    }
   end
 end

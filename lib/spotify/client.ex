@@ -1,11 +1,13 @@
 defmodule Spotify.Client do
+  @pool_size 10
+
   def child_spec(_) do
     :poolboy.child_spec(
       __MODULE__,
       [
         name: {:local, __MODULE__},
         worker_module: Spotify.ClientWorker,
-        size: 3
+        size: @pool_size
       ],
       []
     )

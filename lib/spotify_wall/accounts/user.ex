@@ -6,7 +6,7 @@ defmodule SpotifyWall.Accounts.User do
     field :nickname, :string
     field :token, :string
     field :refresh_token, :string
-    field :expires_at, UnixTimestamp
+    field :expires_at, :utc_datetime
 
     timestamps(type: :utc_datetime)
   end

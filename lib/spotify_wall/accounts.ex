@@ -3,8 +3,8 @@ defmodule SpotifyWall.Accounts do
   The Accounts context.
   """
 
-  # 10 minutes
-  @refresh_tokens_expiring_in 10 * 60
+  # 20 minutes
+  @refresh_tokens_expiring_in 20 * 60
 
   import Ecto.Query, warn: false
   alias SpotifyWall.Repo
@@ -20,7 +20,7 @@ defmodule SpotifyWall.Accounts do
       nickname: nickname,
       token: token,
       refresh_token: refresh_token,
-      expires_at: expires_at
+      expires_at: DateTime.from_unix!(expires_at)
     }
 
     %User{}
@@ -38,6 +38,7 @@ defmodule SpotifyWall.Accounts do
 
   def update_user_token(user, token, expires_in) do
     expires_at = DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), expires_in)
+
     User.changeset(user, %{token: token, expires_at: expires_at})
     |> Repo.update!()
   end
@@ -52,6 +53,8 @@ defmodule SpotifyWall.Accounts do
   end
 
   # TODO: Perform periodic user cleanup
+  # or allow unconnecting and deleting user
+  # Sign in with spotify account.
   def delete_user(%User{} = user) do
     Repo.delete(user)
   end

@@ -20,7 +20,7 @@ defmodule SpotifyWall.Application do
       {Oban, oban_config()},
       Spotify.ProcessRegistry,
       Spotify.Client,
-      Spotify.Cache,
+      Spotify.Cache
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
