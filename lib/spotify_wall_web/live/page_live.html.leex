@@ -2,9 +2,9 @@
   <%= if Enum.empty?(@users) do %>
     Nobody is listening..
   <% else %>
-    <%= for {user, activity} <- @users do %>
+    <%= for {nickname, activity} <- @users do %>
       <%= if activity do %>
-        <%= live_component @socket, SpotifyWallWeb.AudioTileComponent, id: user.id, user: user, activity: activity %>
+        <%= live_component @socket, SpotifyWallWeb.AudioTileComponent, id: "user-#{nickname}", nickname: nickname, activity: activity %>
       <% end %>
     <% end %>
   <% end %>

@@ -1,7 +1,7 @@
 defmodule Spotify.User do
   use GenServer, restart: :temporary
 
-  @thirty_seconds 30_000
+  @ten_seconds 10_000
 
   def start_link(nickname) do
     GenServer.start_link(Spotify.User, nickname, name: via_tuple(nickname))
@@ -39,10 +39,13 @@ defmodule Spotify.User do
 
     %{token: token} = SpotifyWall.Accounts.get_user_by_nickname!(nickname)
     new_activity = Spotify.Client.get_activity(token)
+
+    Spotify.Activities.broadcast(nickname, new_activity)
+
     {:noreply, {nickname, new_activity}}
   end
 
   defp schedule_activity_update() do
-    Process.send_after(self(), :update_activity, @thirty_seconds)
+    Process.send_after(self(), :update_activity, @ten_seconds)
   end
 end
