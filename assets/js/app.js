@@ -33,3 +33,18 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+function stopAllPlayers() {
+  let players = document.querySelectorAll('*[id^="audio-"]');
+  players.forEach(player => player.pause())
+}
+
+window.togglePlay = function(id) {
+  let audio = document.getElementById(id)
+  if (audio.paused) {
+    stopAllPlayers()
+    audio.play()
+  } else {
+    audio.pause()
+  }
+};
+

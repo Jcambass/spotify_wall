@@ -3,6 +3,7 @@ defmodule Spotify.API do
 
   plug Tesla.Middleware.DecodeJson
   plug Tesla.Middleware.FormUrlencoded
+  plug Tesla.Middleware.Telemetry
 
   alias Spotify.Activity
 

@@ -41,8 +41,18 @@ defmodule SpotifyWallWeb.Telemetry do
       summary("vm.memory.total", unit: {:byte, :kilobyte}),
       summary("vm.total_run_queue_lengths.total"),
       summary("vm.total_run_queue_lengths.cpu"),
-      summary("vm.total_run_queue_lengths.io")
+      summary("vm.total_run_queue_lengths.io"),
+
+      # Spotify
+      summary("tesla.request.request_time",
+      unit: {:native, :millisecond},
+      tags: [:method, :url],
+      tag_values: &tag_tesla_method_and_request_path/1)
     ]
+  end
+
+  defp tag_tesla_method_and_request_path(%{result: {_status, res}}) do
+    Map.take(res, [:method, :url])
   end
 
   defp periodic_measurements do
