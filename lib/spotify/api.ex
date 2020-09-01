@@ -31,6 +31,7 @@ defmodule Spotify.API do
 
     case body do
       "" -> nil
+      %{"error" => _error} -> nil
       %{"item" => item} -> parse_item(item)
     end
   end

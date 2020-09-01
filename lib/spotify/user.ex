@@ -34,13 +34,15 @@ defmodule Spotify.User do
   end
 
   @impl GenServer
-  def handle_info(:update_activity, {nickname, _activity}) do
+  def handle_info(:update_activity, {nickname, activity}) do
     schedule_activity_update()
 
     %{token: token} = SpotifyWall.Accounts.get_user_by_nickname!(nickname)
     new_activity = Spotify.Client.get_activity(token)
 
-    Spotify.Activities.broadcast(nickname, new_activity)
+    if activity != new_activity do
+      Spotify.Activities.broadcast(nickname, new_activity)
+    end
 
     {:noreply, {nickname, new_activity}}
   end
