@@ -40,11 +40,15 @@ function stopAllPlayers() {
 
 window.togglePlay = function(id) {
   let audio = document.getElementById(id)
-  if (audio.paused) {
-    stopAllPlayers()
-    audio.play()
+  if (audio == null) {
+    return
   } else {
-    audio.pause()
+    if (audio.paused) {
+      stopAllPlayers()
+      audio.play()
+    } else {
+      audio.pause()
+    }
   }
 };
 
