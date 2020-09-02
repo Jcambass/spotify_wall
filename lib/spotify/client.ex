@@ -1,4 +1,9 @@
 defmodule Spotify.Client do
+  @moduledoc """
+  This module implements a pool of `Spotify.ClientWorker` processes.
+  This prevents us from doing to many concurrent requests to Spotify.
+  """
+
   @pool_size 10
 
   def child_spec(_) do
@@ -13,6 +18,9 @@ defmodule Spotify.Client do
     )
   end
 
+  @doc """
+  Checks out a worker and fetches the current activity for a given token.
+  """
   def get_activity(token) do
     :poolboy.transaction(
       __MODULE__,

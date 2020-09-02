@@ -1,4 +1,8 @@
 defmodule Spotify.ProcessRegistry do
+  @moduledoc """
+  This module provides a node-local process registry that is used to register and retrieve `Spotify.User` processes.
+  """
+
   def start_link do
     Registry.start_link(keys: :unique, name: __MODULE__)
   end

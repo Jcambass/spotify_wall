@@ -1,4 +1,10 @@
 defmodule Spotify.User do
+  @moduledoc """
+  This module implements a user process that holds the currently playing track for a nickname.
+  The current activity is fetched when creating the process and is periodically updated every 10 seconds.
+  The cached activity can be retrieved from the process anytime.
+  """
+
   use GenServer, restart: :temporary
 
   @ten_seconds 10_000
@@ -7,6 +13,10 @@ defmodule Spotify.User do
     GenServer.start_link(Spotify.User, nickname, name: via_tuple(nickname))
   end
 
+  @doc """
+  Retrieves the stored current activity from the `Spotify.User` process `spotify_user`.
+  Returns `nil` as the activity if the user process has crashed.
+  """
   def get_activity(spotify_user) do
     try do
       GenServer.call(spotify_user, :get_activity)
@@ -43,6 +53,7 @@ defmodule Spotify.User do
     }
   end
 
+  # Periodically update the users activity.
   @impl GenServer
   def handle_info(:update_activity, {nickname, activity}) do
     schedule_activity_update()
@@ -53,6 +64,7 @@ defmodule Spotify.User do
   end
 
   @impl GenServer
+  # Broadcast activity as `nil` if the user process is about to die.
   def terminate(reason, {nickname, activity}) do
     IO.puts("Spotify User #{nickname} terminated. Reason: #{Kernel.inspect(reason)}")
     maybe_broadcast(nickname, activity, nil)

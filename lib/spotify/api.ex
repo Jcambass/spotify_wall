@@ -1,4 +1,8 @@
 defmodule Spotify.API do
+  @moduledoc """
+  This module implements an API Client for the Spotify API.
+  """
+
   use Tesla
 
   plug Tesla.Middleware.DecodeJson
@@ -7,6 +11,10 @@ defmodule Spotify.API do
 
   alias Spotify.Activity
 
+  @doc """
+  Fetches a new access token for a given refresh_token.
+  Returns a tuple with the token and the tokens time-to-life.
+  """
   def refresh_access_token(refresh_token) do
     auth = build_auth()
 
@@ -23,6 +31,12 @@ defmodule Spotify.API do
   end
 
   # TODO: Handle rate limiting
+  @doc """
+  Fetches the current listening activity for a given token.
+  Returns a `Spotify.Activity` struct if the user is currently listening.
+  Returns `nil` if the user is not listening or listening to an unsupported type of media such as local files or podcasts.
+  Also Returns `nil` if there are more low level failures like an expired access token or rate limit reached.
+  """
   def current_activity(token) do
     {:ok, %{body: body}} =
       get("https://api.spotify.com/v1/me/player/currently-playing",
