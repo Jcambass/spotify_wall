@@ -8,7 +8,11 @@ defmodule Spotify.User do
   end
 
   def get_activity(spotify_user) do
-    GenServer.call(spotify_user, :get_activity)
+    try do
+      GenServer.call(spotify_user, :get_activity)
+    catch
+      :exit, _reason -> nil
+    end
   end
 
   defp via_tuple(nickname) do
@@ -46,6 +50,12 @@ defmodule Spotify.User do
     maybe_broadcast(nickname, activity, new_activity)
 
     {:noreply, {nickname, new_activity}}
+  end
+
+  @impl GenServer
+  def terminate(reason, {nickname, activity}) do
+    IO.puts("Spotify User #{nickname} terminated. Reason: #{Kernel.inspect(reason)}")
+    maybe_broadcast(nickname, activity, nil)
   end
 
   defp fetch_activity(nickname) do

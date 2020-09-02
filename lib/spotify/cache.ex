@@ -13,10 +13,14 @@ defmodule Spotify.Cache do
   end
 
   def user_process(nickname) do
-    case start_child(nickname) do
-      {:ok, pid} -> {:ok, pid}
-      {:error, {:already_started, pid}} -> {:ok, pid}
-      {:error, error} -> {:error, error}
+    try do
+      case start_child(nickname) do
+        {:ok, pid} -> {:ok, pid}
+        {:error, {:already_started, pid}} -> {:ok, pid}
+        {:error, error} -> {:error, error}
+      end
+    catch
+      :exit, reason -> {:error, reason}
     end
   end
 

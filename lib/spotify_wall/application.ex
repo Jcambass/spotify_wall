@@ -15,8 +15,6 @@ defmodule SpotifyWall.Application do
       {Phoenix.PubSub, name: SpotifyWall.PubSub},
       # Start the Endpoint (http/https)
       SpotifyWallWeb.Endpoint,
-      # Start a worker by calling: SpotifyWall.Worker.start_link(arg)
-      # {SpotifyWall.Worker, arg},
       {Oban, oban_config()},
       Spotify.ProcessRegistry,
       Spotify.Client,
