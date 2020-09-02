@@ -66,5 +66,5 @@ defmodule Spotify.API do
     }
   end
 
-  defp parse_item(_item), do: nil
+  #defp parse_item(_item), do: nil
 end

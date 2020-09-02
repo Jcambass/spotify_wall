@@ -26,7 +26,9 @@ defmodule SpotifyWallWeb.PageLive do
   end
 
   defp get_activity(user) do
-    Spotify.Cache.user_process(user.nickname)
-    |> Spotify.User.get_activity()
+    case Spotify.Cache.user_process(user.nickname) do
+      {:ok, pid} -> Spotify.User.get_activity(pid)
+      {:error, _error} -> nil
+    end
   end
 end

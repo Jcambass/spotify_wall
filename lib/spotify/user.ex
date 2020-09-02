@@ -20,6 +20,7 @@ defmodule Spotify.User do
     IO.puts("Starting Spotify User for #{nickname}")
     schedule_activity_update()
 
+    # NOTE: This is ok for a dynamic supervisor but we might want to move this to a handle_continue call.
     %{token: token} = SpotifyWall.Accounts.get_user_by_nickname!(nickname)
     {:ok, {nickname, Spotify.Client.get_activity(token)}}
   end
