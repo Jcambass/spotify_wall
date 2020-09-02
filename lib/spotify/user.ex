@@ -18,11 +18,16 @@ defmodule Spotify.User do
   @impl GenServer
   def init(nickname) do
     IO.puts("Starting Spotify User for #{nickname}")
-    schedule_activity_update()
+    {:ok, {nickname, nil}, {:continue, :init_activity}}
+  end
 
-    # NOTE: This is ok for a dynamic supervisor but we might want to move this to a handle_continue call.
-    %{token: token} = SpotifyWall.Accounts.get_user_by_nickname!(nickname)
-    {:ok, {nickname, Spotify.Client.get_activity(token)}}
+  @impl GenServer
+  def handle_continue(:init_activity, {nickname, nil}) do
+    schedule_activity_update()
+    new_activity = fetch_activity(nickname)
+    maybe_broadcast(nickname, nil, new_activity)
+
+    {:noreply, {nickname, new_activity}}
   end
 
   @impl GenServer
@@ -37,15 +42,21 @@ defmodule Spotify.User do
   @impl GenServer
   def handle_info(:update_activity, {nickname, activity}) do
     schedule_activity_update()
+    new_activity = fetch_activity(nickname)
+    maybe_broadcast(nickname, activity, new_activity)
 
+    {:noreply, {nickname, new_activity}}
+  end
+
+  defp fetch_activity(nickname) do
     %{token: token} = SpotifyWall.Accounts.get_user_by_nickname!(nickname)
-    new_activity = Spotify.Client.get_activity(token)
+    Spotify.Client.get_activity(token)
+  end
 
+  defp maybe_broadcast(nickname, activity, new_activity) do
     if activity != new_activity do
       Spotify.Activities.broadcast(nickname, new_activity)
     end
-
-    {:noreply, {nickname, new_activity}}
   end
 
   defp schedule_activity_update() do
