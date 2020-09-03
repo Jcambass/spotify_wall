@@ -27,4 +27,14 @@ defmodule Spotify.Client do
       fn worker_pid -> Spotify.ClientWorker.get_activity(worker_pid, token) end
     )
   end
+
+  @doc """
+  Checks out a worker and requests a new access token for the given access token.
+  """
+  def refresh_access_token(refresh_token) do
+    :poolboy.transaction(
+      __MODULE__,
+      fn worker_pid -> Spotify.ClientWorker.refresh_access_token(worker_pid, refresh_token) end
+    )
+  end
 end

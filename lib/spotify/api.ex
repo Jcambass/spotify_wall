@@ -25,9 +25,10 @@ defmodule Spotify.API do
         headers: [{"Authorization", "Basic #{auth}"}]
       )
 
-    %{"access_token" => token, "expires_in" => expires_in} = body
-
-    {token, expires_in}
+    case body do
+      %{"access_token" => token, "expires_in" => expires_in} -> {:ok, {token, expires_in}}
+      %{"error" => "invalid_grant", "error_description" => "Refresh token revoked"} -> {:error, :refresh_token_revoked}
+    end
   end
 
   # TODO: Handle rate limiting

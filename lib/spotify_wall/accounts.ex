@@ -52,9 +52,7 @@ defmodule SpotifyWall.Accounts do
     )
   end
 
-  # TODO: Perform periodic user cleanup
-  # or allow unconnecting and deleting user
-  # Sign in with spotify account.
+  # TODO: allow unconnecting and deleting user.
   def delete_user(%User{} = user) do
     Repo.delete(user)
   end

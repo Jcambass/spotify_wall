@@ -17,6 +17,13 @@ defmodule Spotify.ClientWorker do
     GenServer.call(pid, {:get_activity, token})
   end
 
+  @doc """
+  Fetches a new access token and it's ttl for a given refresh token.
+  """
+  def refresh_access_token(pid, refresh_token) do
+    GenServer.call(pid, {:refresh_access_token, refresh_token})
+  end
+
   @impl GenServer
   def init(_arg) do
     {:ok, []}
@@ -24,8 +31,15 @@ defmodule Spotify.ClientWorker do
 
   @impl GenServer
   def handle_call({:get_activity, token}, _from, state) do
-    data = Spotify.API.current_activity(token)
+    res = Spotify.API.current_activity(token)
 
-    {:reply, data, state}
+    {:reply, res, state}
+  end
+
+  @impl GenServer
+  def handle_call({:refresh_access_token, refresh_token}, _from, state) do
+    res = Spotify.API.refresh_access_token(refresh_token)
+
+    {:reply, res, state}
   end
 end
