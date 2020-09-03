@@ -2,7 +2,7 @@ defmodule Spotify.Cache do
   @moduledoc """
   This module provides a Cache of Spotify.User processes.
   Using `user_process` a Spotify.User process for a given nickname can be created/retrieved.
-  Each user process is supervised and additionaly exit signals are catched and translated into error tuples to provide full error isolation between user processes.
+  Each user process is supervised.
   """
 
   @doc """
@@ -26,15 +26,11 @@ defmodule Spotify.Cache do
   If the user process fails to initialize (exceptions raised or exited) an error tuple like `{:error, error}` will be returned.
   """
   def user_process(nickname) do
-    try do
       case start_child(nickname) do
         {:ok, pid} -> {:ok, pid}
         {:error, {:already_started, pid}} -> {:ok, pid}
         {:error, error} -> {:error, error}
       end
-    catch
-      :exit, reason -> {:error, reason}
-    end
   end
 
   defp start_child(nickname) do

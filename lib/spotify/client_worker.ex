@@ -5,8 +5,8 @@ defmodule Spotify.ClientWorker do
   """
   use GenServer
 
-  def start_link(worker_id) do
-    IO.puts("Starting Spotify Client worker #{worker_id}")
+  def start_link(_args) do
+    IO.puts("Starting Spotify Client worker.")
     GenServer.start_link(__MODULE__, [])
   end
 

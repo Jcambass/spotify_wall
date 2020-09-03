@@ -18,11 +18,7 @@ defmodule Spotify.User do
   Returns `nil` as the activity if the user process has crashed.
   """
   def get_activity(spotify_user) do
-    try do
       GenServer.call(spotify_user, :get_activity)
-    catch
-      :exit, _reason -> nil
-    end
   end
 
   defp via_tuple(nickname) do
@@ -32,16 +28,13 @@ defmodule Spotify.User do
   @impl GenServer
   def init(nickname) do
     IO.puts("Starting Spotify User for #{nickname}")
-    {:ok, {nickname, nil}, {:continue, :init_activity}}
-  end
 
-  @impl GenServer
-  def handle_continue(:init_activity, {nickname, nil}) do
+    # TODO: Move me to `handle_continue` without the need to catch exits in two places!
     schedule_activity_update()
     new_activity = fetch_activity(nickname)
     maybe_broadcast(nickname, nil, new_activity)
 
-    {:noreply, {nickname, new_activity}}
+    {:ok, {nickname, new_activity}}
   end
 
   @impl GenServer
