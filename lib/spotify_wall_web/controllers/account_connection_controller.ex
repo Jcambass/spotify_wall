@@ -27,9 +27,8 @@ defmodule SpotifyWallWeb.AccountConnectionController do
     conn
     |> SpotifyWallWeb.Auth.login(user)
     |> put_flash(:info, "Successfully authenticated.")
-    |> redirect(to: "/")
+    |> redirect(to: Routes.wall_path(conn, :index))
   end
 
-  # TODO: Add logout feature
   # TODO: Add account deletion feature
 end

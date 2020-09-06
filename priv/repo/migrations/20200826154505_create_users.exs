@@ -5,7 +5,6 @@ defmodule SpotifyWall.Repo.Migrations.CreateUsers do
     create table(:users) do
       add :nickname, :string
       add :token, :string
-
       timestamps()
     end
 

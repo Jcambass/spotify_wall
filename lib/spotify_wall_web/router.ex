@@ -24,13 +24,6 @@ defmodule SpotifyWallWeb.Router do
     end
   end
 
-  scope "/", SpotifyWallWeb do
-    pipe_through :browser
-
-    # TODO: Rename me!
-    live "/", PageLive, :index
-  end
-
   scope "/auth", SpotifyWallWeb do
     pipe_through :browser
 
@@ -39,15 +32,29 @@ defmodule SpotifyWallWeb.Router do
     post "/:provider/callback", AccountConnectionController, :callback
   end
 
-  scope "/account", SpotifyWallWeb do
+  scope "/", SpotifyWallWeb do
     pipe_through :browser
+
+    get "/", PublicController, :index
+  end
+
+  scope "/", SpotifyWallWeb do
+    pipe_through [:browser, :authenticate_user]
+
+    resources "/walls", WallController, except: [:show]
+
+    live "/walls/:id/", WallLive
+  end
+
+  scope "/account", SpotifyWallWeb do
+    pipe_through [:browser, :authenticate_user]
 
     get "/", AccountConnectionController, :show
     delete "/", AccountConnectionController, :delete
   end
 
   scope "/session", SpotifyWallWeb do
-    pipe_through :browser
+    pipe_through [:browser, :authenticate_user]
 
     delete "/", SessionController, :delete
   end

@@ -1,13 +1,22 @@
-defmodule SpotifyWallWeb.PageLive do
+defmodule SpotifyWallWeb.WallLive do
   use SpotifyWallWeb, :live_view
   alias SpotifyWall.Accounts
 
   @impl true
-  def mount(_params, _session, socket) do
-    if connected?(socket), do: Spotify.Activities.subscribe()
-
-    users = Accounts.list_users()
+  def mount(%{"id" => wall_id}, %{"user_id" => user_id} = _session, socket) do
+    users = Accounts.get_user!(user_id)
+    |> Accounts.get_wall!(wall_id)
+    |> Accounts.get_users_for_wall
     |> Enum.map(fn u -> {u.nickname, get_activity(u)} end)
+
+    # TODO: Make it clearer that we start each users process with get_activity and subscribe each even if we don't find an acitvity for him.
+    if connected?(socket) do
+      Enum.each(users, fn {nickname, _activity} ->
+        Spotify.Activities.subscribe_to(nickname)
+      end)
+    end
+
+    users = users
     |> Enum.filter(fn {_nickname, activity} -> activity end)
     |> Map.new
 
@@ -15,6 +24,7 @@ defmodule SpotifyWallWeb.PageLive do
   end
 
   @impl true
+  # TODO: Maybe ensure that user really belongs to the wall.
   def handle_info({:activity_updated, nickname, activity}, socket) do
     fun = if activity do
       fn users -> Map.put(users, nickname, activity) end

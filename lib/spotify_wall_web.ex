@@ -23,6 +23,7 @@ defmodule SpotifyWallWeb do
 
       import Plug.Conn
       import SpotifyWallWeb.Gettext
+      import SpotifyWallWeb.Auth, only: [authenticate_user: 2]
       alias SpotifyWallWeb.Router.Helpers, as: Routes
     end
   end
@@ -66,6 +67,7 @@ defmodule SpotifyWallWeb do
       import Plug.Conn
       import Phoenix.Controller
       import Phoenix.LiveView.Router
+      import SpotifyWallWeb.Auth, only: [authenticate_user: 2]
     end
   end
 
