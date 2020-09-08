@@ -7,6 +7,7 @@
     <%= csrf_meta_tag() %>
     <%= live_title_tag assigns[:page_title] || "SpotifyWall" %>
     <link phx-track-static rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
     <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
   <body>
@@ -16,7 +17,7 @@
           <div class="md:flex md:items-center md:justify-between">
             <div class="flex-1 min-w-0">
               <h2 class="text-3xl font-bold leading-7 text-white sm:text-3xl sm:leading-9 sm:truncate">
-                Spotify Wall
+                <%= link "Spotify Wall", to: Routes.wall_path(@conn, :index) %>
               </h2>
             </div>
             <div class="mt-4 flex md:mt-0 md:ml-4">

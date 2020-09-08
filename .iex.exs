@@ -1,5 +1,11 @@
 alias SpotifyWall.Repo
 alias SpotifyWall.Accounts
 alias SpotifyWall.Accounts.User
+alias SpotifyWall.Memberships
+alias SpotifyWall.Memberships.Membership
+alias SpotifyWall.Invitations
+alias SpotifyWall.Invitations.Invitation
+alias SpotifyWall.Walls
+alias SpotifyWall.Walls.Wall
 alias Spotify.Client
 import Ecto.Query

@@ -24,7 +24,7 @@ defmodule SpotifyWall.Workers.RefreshUserToken do
 
   defp handle_error(user, :refresh_token_revoked) do
     # Remove current activity for user
-    #Spotify.Activities.broadcast(user.nickname, nil)
+    # Spotify.Activities.broadcast(user.nickname, nil)
     # TODO: Change user state, stop process and exclude him from the wall.
     nil
   end

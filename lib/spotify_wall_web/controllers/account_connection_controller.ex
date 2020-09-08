@@ -19,15 +19,21 @@ defmodule SpotifyWallWeb.AccountConnectionController do
             }
           }
         } = conn,
-        _params
+        params
       ) do
+
     # TODO: This is probably quite insecure!
     user = Accounts.upsert_user(nickname, token, refresh_token, expires_at)
 
+    redirect_url = case Map.get(params, "state", nil) do
+      nil -> Routes.wall_path(conn, :index)
+      "" -> Routes.wall_path(conn, :index)
+      encoded_url -> URI.decode(encoded_url)
+    end
+
     conn
     |> SpotifyWallWeb.Auth.login(user)
-    |> put_flash(:info, "Successfully authenticated.")
-    |> redirect(to: Routes.wall_path(conn, :index))
+    |> redirect(to: redirect_url)
   end
 
   # TODO: Add account deletion feature

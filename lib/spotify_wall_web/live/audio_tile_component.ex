@@ -1,6 +1,7 @@
 defmodule SpotifyWallWeb.AudioTileComponent do
   use SpotifyWallWeb, :live_component
- def render(assigns) do
+
+  def render(assigns) do
     ~L"""
       <li id="<%= @id %>" class="py-10 px-6 bg-gray-500 text-center rounded-lg xl:px-10 xl:text-left shadow-lg">
         <div class="space-y-6 xl:space-y-10">

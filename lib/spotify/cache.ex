@@ -26,11 +26,11 @@ defmodule Spotify.Cache do
   If the user process fails to initialize (exceptions raised or exited) an error tuple like `{:error, error}` will be returned.
   """
   def user_process(nickname) do
-      case start_child(nickname) do
-        {:ok, pid} -> {:ok, pid}
-        {:error, {:already_started, pid}} -> {:ok, pid}
-        {:error, error} -> {:error, error}
-      end
+    case start_child(nickname) do
+      {:ok, pid} -> {:ok, pid}
+      {:error, {:already_started, pid}} -> {:ok, pid}
+      {:error, error} -> {:error, error}
+    end
   end
 
   defp start_child(nickname) do

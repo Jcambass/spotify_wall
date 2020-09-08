@@ -18,7 +18,7 @@ defmodule Spotify.User do
   Returns `nil` as the activity if the user process has crashed.
   """
   def get_activity(spotify_user) do
-      GenServer.call(spotify_user, :get_activity)
+    GenServer.call(spotify_user, :get_activity)
   end
 
   defp via_tuple(nickname) do

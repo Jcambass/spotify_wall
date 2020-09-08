@@ -26,8 +26,11 @@ defmodule Spotify.API do
       )
 
     case body do
-      %{"access_token" => token, "expires_in" => expires_in} -> {:ok, {token, expires_in}}
-      %{"error" => "invalid_grant", "error_description" => "Refresh token revoked"} -> {:error, :refresh_token_revoked}
+      %{"access_token" => token, "expires_in" => expires_in} ->
+        {:ok, {token, expires_in}}
+
+      %{"error" => "invalid_grant", "error_description" => "Refresh token revoked"} ->
+        {:error, :refresh_token_revoked}
     end
   end
 

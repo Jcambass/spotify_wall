@@ -45,9 +45,10 @@ defmodule SpotifyWallWeb.Telemetry do
 
       # Spotify
       summary("tesla.request.request_time",
-      unit: {:native, :millisecond},
-      tags: [:method, :url],
-      tag_values: &tag_tesla_method_and_request_path/1)
+        unit: {:native, :millisecond},
+        tags: [:method, :url],
+        tag_values: &tag_tesla_method_and_request_path/1
+      )
     ]
   end
 

@@ -14,8 +14,9 @@ defmodule SpotifyWallWeb.Router do
     plug SpotifyWallWeb.Auth
   end
 
-  pipeline :api do
-    plug :accepts, ["json"]
+  pipeline :public do
+    plug :put_root_layout, {SpotifyWallWeb.LayoutView, :public_root}
+    plug SpotifyWallWeb.RedirectSignedIn
   end
 
   pipeline :admin do
@@ -33,15 +34,27 @@ defmodule SpotifyWallWeb.Router do
   end
 
   scope "/", SpotifyWallWeb do
+    pipe_through [:browser, :public]
+    get "/", PublicController, :index
+  end
+
+  scope "/", SpotifyWallWeb do
     pipe_through :browser
 
-    get "/", PublicController, :index
+    get "/invitations/:id", AcceptInvitationController, :show
+    # TODO: Ideally we only had `put` and no `get` here.
+    put "/invitations/:id/accept", AcceptInvitationController, :accept
+    get "/invitations/:id/accept", AcceptInvitationController, :accept
   end
 
   scope "/", SpotifyWallWeb do
     pipe_through [:browser, :authenticate_user]
 
-    resources "/walls", WallController, except: [:show]
+    resources "/walls", WallController, except: [:show] do
+      delete "/members/:id", MembershipController, :delete
+      delete "/invitations/:id", InvitationController, :delete
+      post "/invitations", InvitationController, :create
+    end
 
     live "/walls/:id/", WallLive
   end

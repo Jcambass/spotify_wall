@@ -14,17 +14,17 @@
       </div>
       <div class="border-t border-gray-200">
         <div class="-mt-px flex">
-          <div class="w-0 flex-1 flex border-r border-gray-200">
-            <%= link(to: Routes.live_path(@conn, SpotifyWallWeb.WallLive, wall.id), class: "relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-4 text-sm leading-5 text-gray-700 font-medium border border-transparent rounded-bl-lg hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 transition ease-in-out duration-150") do %>
-              <svg class="w-5 h-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-              </svg>
-              <span class="ml-3">View</span>
-              <% end %>
-            </a>
-          </div>
           <%= if is_owner?(wall, @current_user) do %>
+            <div class="w-0 flex-1 flex border-r border-gray-200">
+              <%= link(to: Routes.live_path(@conn, SpotifyWallWeb.WallLive, wall.id), class: "relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-4 text-sm leading-5 text-gray-700 font-medium border border-transparent rounded-bl-lg hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 transition ease-in-out duration-150") do %>
+                <svg class="w-5 h-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                  <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                </svg>
+                <span class="ml-3">View</span>
+                <% end %>
+              </a>
+            </div>
             <div class="-ml-px w-0 flex-1 flex">
               <%= link(to: Routes.wall_path(@conn, :edit, wall.id), class: "relative w-0 flex-1 inline-flex items-center justify-center py-4 text-sm leading-5 text-gray-700 font-medium border border-transparent rounded-br-lg hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 transition ease-in-out duration-150") do %>
                 <svg class="w-5 h-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -32,6 +32,17 @@
                 </svg>
                 <span class="ml-3">Manage</span>
               <% end %>
+            </div>
+          <% else %>
+            <div class="w-0 flex-1 flex border-gray-200">
+              <%= link(to: Routes.live_path(@conn, SpotifyWallWeb.WallLive, wall.id), class: "relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-4 text-sm leading-5 text-gray-700 font-medium border border-transparent rounded-bl-lg hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 transition ease-in-out duration-150") do %>
+                <svg class="w-5 h-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                  <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                </svg>
+                <span class="ml-3">View</span>
+                <% end %>
+              </a>
             </div>
           <% end %>
         </div>
@@ -41,7 +52,9 @@
   <li class="col-span-1 bg-white rounded-lg shadow">
     <div class="w-full flex items-center justify-center p-6 space-x-6">
       <%= link(to: Routes.wall_path(@conn, :new)) do %>
-        NEW
+        <svg class="w-24 h-24 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+        </svg>
       <% end %>
     </div>
   </li>

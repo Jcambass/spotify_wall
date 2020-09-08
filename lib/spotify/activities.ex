@@ -14,6 +14,10 @@ defmodule Spotify.Activities do
   Broadcasts the current activity for a given nickname to all subscribed processes.
   """
   def broadcast(nickname, activity) do
-    Phoenix.PubSub.broadcast(SpotifyWall.PubSub, "activities:#{nickname}", {:activity_updated, nickname, activity})
+    Phoenix.PubSub.broadcast(
+      SpotifyWall.PubSub,
+      "activities:#{nickname}",
+      {:activity_updated, nickname, activity}
+    )
   end
 end
