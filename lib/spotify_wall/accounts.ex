@@ -13,6 +13,8 @@ defmodule SpotifyWall.Accounts do
   alias SpotifyWall.Accounts.Wall
   alias SpotifyWall.Accounts.Membership
 
+  # TODO: Cleanup and split context!
+
   def get_user!(id), do: Repo.get!(User, id)
 
   def get_user_by_nickname!(nickname), do: Repo.get_by!(User, nickname: nickname)
@@ -38,10 +40,18 @@ defmodule SpotifyWall.Accounts do
     wall = %Wall{}
     |> Wall.changeset(%{name: name})
     |> Ecto.Changeset.put_assoc(:owner, user, required: true)
-    |> Repo.insert!
+    |> Repo.insert
 
-    add_user_to_wall(wall, user)
+    case wall do
+      {:ok, wall} -> {:ok, add_user_to_wall(wall, user)}
+      res -> res
+    end
+  end
+
+  def update_wall!(wall, name) do
     wall
+    |> Wall.changeset(%{name: name})
+    |> Repo.update
   end
 
   def get_walls_for_user(user) do
@@ -49,6 +59,15 @@ defmodule SpotifyWall.Accounts do
     |> Repo.preload(:walls)
     |> Repo.preload(walls: :owner)
     user.walls
+  end
+
+  def get_wall_for_owner!(%User{id: user_id}, wall_id) do
+    query = from w in Wall,
+      where: w.owner_id == ^user_id,
+      where: w.id == ^wall_id
+
+    Repo.one!(query)
+    |> Repo.preload(:owner)
   end
 
   def get_wall!(%User{id: user_id}, wall_id) do
@@ -60,8 +79,8 @@ defmodule SpotifyWall.Accounts do
     Repo.one!(query)
   end
 
-  def delete_wall!(wall_id) do
-    Repo.delete!(%Wall{id: wall_id})
+  def delete_wall!(wall) do
+    Repo.delete!(wall)
   end
 
   def get_users_for_wall(wall) do
@@ -69,13 +88,23 @@ defmodule SpotifyWall.Accounts do
     wall.users
   end
 
+  def get_members(%Wall{id: wall_id}) do
+    query = from mem in Membership,
+      where: mem.wall_id == ^wall_id
+
+    Repo.all(query)
+    |> Repo.preload(:user)
+  end
+
   # TODO: Move to something like accept_invite.
   def add_user_to_wall(wall, user) do
-    %Membership{}
+    {:ok, _} = %Membership{}
     |> Membership.changeset(%{})
     |> Ecto.Changeset.put_assoc(:wall, wall)
     |> Ecto.Changeset.put_assoc(:user, user)
-    |> Repo.insert!
+    |> Repo.insert
+
+    wall
   end
 
   # TODO: Prevent removing the owner of the wall.
