@@ -4,9 +4,10 @@ defmodule Spotify.ClientWorker do
   It serializes interactions with Spotify.
   """
   use GenServer
+  require Logger
 
   def start_link(_args) do
-    IO.puts("Starting Spotify Client worker.")
+    Logger.info("Starting Spotify Client worker.")
     GenServer.start_link(__MODULE__, [])
   end
 

@@ -6,6 +6,7 @@ defmodule Spotify.User do
   """
 
   use GenServer, restart: :temporary
+  require Logger
 
   @ten_seconds 10_000
 
@@ -27,7 +28,7 @@ defmodule Spotify.User do
 
   @impl GenServer
   def init(nickname) do
-    IO.puts("Starting Spotify User for #{nickname}")
+    Logger.info("Starting Spotify User for #{nickname}")
 
     # TODO: Move me to `handle_continue` without the need to catch exits in two places!
     schedule_activity_update()
@@ -59,7 +60,7 @@ defmodule Spotify.User do
   @impl GenServer
   # Broadcast activity as `nil` if the user process is about to die.
   def terminate(reason, {nickname, activity}) do
-    IO.puts("Spotify User #{nickname} terminated. Reason: #{Kernel.inspect(reason)}")
+    Logger.info("Spotify User #{nickname} terminated. Reason: #{Kernel.inspect(reason)}")
     maybe_broadcast(nickname, activity, nil)
   end
 

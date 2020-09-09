@@ -5,11 +5,13 @@ defmodule Spotify.Cache do
   Each user process is supervised.
   """
 
+  require Logger
+
   @doc """
   Starts dynamic supervisor for all `Spotify.User` processes.
   """
   def start_link() do
-    IO.puts("Starting Spotify Cache.")
+    Logger.info("Starting Spotify Cache.")
     DynamicSupervisor.start_link(name: __MODULE__, strategy: :one_for_one)
   end
 

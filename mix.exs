@@ -52,7 +52,8 @@ defmodule SpotifyWall.MixProject do
       {:tesla, "~> 1.3.0"},
       {:oban, "~> 2.1"},
       {:poolboy, "~> 1.5"},
-      {:ex_doc, "~> 0.22", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.22", only: :dev, runtime: false},
+      {:logflare_logger_backend, "~> 0.7.6"}
     ]
   end
 

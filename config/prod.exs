@@ -19,7 +19,14 @@ config :spotify_wall, :admin_area,
   password: System.get_env("ADMIN_PASSWORD")
 
 # Do not print debug messages in production
-config :logger, level: :info
+config :logger, level: :info, backends: [LogflareLogger.HttpBackend]
+config :logflare_logger_backend,
+url: "https://api.logflare.app", # https://api.logflare.app is configured by default and you can set your own url
+level: :info, # Default LogflareLogger level is :info. Note that log messages are filtered by the :logger application first
+api_key: System.get_env("LOGFLARE_API_KEY"),
+source_id: System.get_env("LOGFLARE_SOURCE_ID"),
+flush_interval: 1_000, # minimum time in ms before a log batch is sent to the server ",
+max_batch_size: 50 # maximum number of events before a log batch is sent to the server
 
 # ## SSL Support
 #
