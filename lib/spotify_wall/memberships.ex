@@ -6,7 +6,10 @@ defmodule SpotifyWall.Memberships do
   alias SpotifyWall.Memberships.Membership
   alias SpotifyWall.Accounts.User
 
+  require Logger
+
   def add_member(wall, user) do
+    Logger.info("add_member_to_wall", wall: %{id: wall.id}, user: %{id: user.id})
     case Membership.add_member_changeset(wall, user) |> Repo.insert() do
       {:ok, _membership} ->
         {:ok, wall}
@@ -28,6 +31,7 @@ defmodule SpotifyWall.Memberships do
 
   # TODO: Prevent removing the owner of the wall.
   def remove_member!(wall, user) do
+    Logger.info("remove_member_from_wall", wall: %{id: wall.id}, user: %{id: user.id})
     Repo.get_by!(Membership, wall_id: wall.id, user_id: user.id)
     |> Repo.delete!()
   end

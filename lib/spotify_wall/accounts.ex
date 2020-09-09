@@ -11,11 +11,14 @@ defmodule SpotifyWall.Accounts do
 
   alias SpotifyWall.Accounts.User
 
+  require Logger
+
   def get_user!(id), do: Repo.get!(User, id)
 
   def get_user_by_nickname!(nickname), do: Repo.get_by!(User, nickname: nickname)
 
   def upsert_user(nickname, token, refresh_token, expires_at) do
+    Logger.info("upserted_user", user: %{nickname: nickname})
     attrs = %{
       nickname: nickname,
       token: token,
@@ -33,6 +36,7 @@ defmodule SpotifyWall.Accounts do
   end
 
   def update_user_token(user, token, expires_in) do
+    Logger.info("updated_user_token", user: %{id: user.id}, token: %{expires_in: expires_in})
     expires_at = DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), expires_in)
 
     User.changeset(user, %{token: token, expires_at: expires_at})
@@ -50,6 +54,7 @@ defmodule SpotifyWall.Accounts do
 
   # TODO: allow unconnecting and deleting user.
   def delete_user(%User{} = user) do
+    Logger.info("deleted_user", user: %{id: user.id})
     Repo.delete(user)
   end
 end

@@ -9,12 +9,16 @@ defmodule SpotifyWall.Invitations do
   alias SpotifyWall.Memberships
   alias SpotifyWall.Walls.Wall
 
+  require Logger
+
   def create!(wall) do
+    Logger.info("created_invitation", wall: %{id: wall.id})
     Invitation.create_changeset(wall, @invitation_lifetime)
     |> Repo.insert!()
   end
 
   def revoke!(invite) do
+    Logger.info("revoked_invitation", invitation: %{id: invite.id})
     Invitation.revoke_changeset(invite)
     |> Repo.update!()
   end
@@ -48,6 +52,7 @@ defmodule SpotifyWall.Invitations do
 
   # TODO: Prevent accepting expired or revoked invitations!
   def accept!(invite, user) do
+    Logger.info("accepted_invitation", invitation: %{id: invite.id}, user: %{id: user.id})
     invite =
       Repo.preload(invite, :accepted_by)
       |> Invitation.accept_changeset(user)
@@ -57,7 +62,9 @@ defmodule SpotifyWall.Invitations do
       # TODO: Unify behaviour so that we don't accept the invite if we're already an member.
       # Same would happen if the user is already logged in and tries to accept the invite and he's already an member.
     case Memberships.add_member(invite.wall, user) do
-      {:error, :already_member} -> invite.wall
+      {:error, :already_member} ->
+        Logger.info("existing_member_accepted_invitation", invitation: %{id: invite.id}, user: %{id: user.id})
+        invite.wall
       {:ok, wall} -> wall
     end
   end
