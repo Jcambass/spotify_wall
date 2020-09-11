@@ -46,7 +46,7 @@
             <div class="flex-1 w-full bg-gray-800"></div>
           </div>
           <div class="max-w-screen-xl mx-auto px-4 sm:px-6 pb-16">
-            <img class="relative rounded-lg shadow-lg" src="https://tailwindui.com/img/component-images/top-nav-with-multi-column-layout-screenshot.png" alt="App screenshot">
+            <img class="relative rounded-lg shadow-lg" src="<%= Routes.static_path(@conn, "/images/spotify_wall.png") %>" alt="App screenshot">
           </div>
         </div>
       </div>
