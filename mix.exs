@@ -53,7 +53,8 @@ defmodule SpotifyWall.MixProject do
       {:oban, "~> 2.1"},
       {:poolboy, "~> 1.5"},
       {:ex_doc, "~> 0.22", only: :dev, runtime: false},
-      {:logflare_logger_backend, "~> 0.7.6"}
+      {:logflare_logger_backend, "~> 0.7.6"},
+      {:benchee, "~> 1.0", only: :dev}
     ]
   end
 

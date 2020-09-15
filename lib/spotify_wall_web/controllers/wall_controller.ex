@@ -22,7 +22,7 @@ defmodule SpotifyWallWeb.WallController do
   end
 
   def create(conn, %{"wall" => %{"name" => name}}, current_user) do
-    case Walls.create!(current_user, name) do
+    case Walls.create(current_user, name) do
       {:ok, _wall} -> redirect(conn, to: Routes.wall_path(conn, :index))
       {:error, changeset} -> render(conn, "new.html", changeset: changeset)
     end

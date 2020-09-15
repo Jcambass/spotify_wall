@@ -13,5 +13,6 @@ defmodule SpotifyWall.Walls.Wall do
     wall
     |> cast(attrs, [:name])
     |> validate_required([:name])
+    |> validate_length(:name, min: 1, max: 255, count: :bytes)
   end
 end

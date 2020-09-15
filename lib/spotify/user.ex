@@ -64,6 +64,8 @@ defmodule Spotify.User do
     maybe_broadcast(nickname, activity, nil)
   end
 
+  # TODO: Store token and automically renew it when it fails.
+  # TODO: Remove Oban.
   defp fetch_activity(nickname) do
     %{token: token} = SpotifyWall.Accounts.get_user_by_nickname!(nickname)
     Spotify.Client.get_activity(token)
