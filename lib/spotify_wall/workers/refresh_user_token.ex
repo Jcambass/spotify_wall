@@ -19,6 +19,13 @@ defmodule SpotifyWall.Workers.RefreshUserToken do
   end
 
   defp update_token(user, token, expires_in) do
+    # TODO: Decide if we need to handle errors here?
+    # The token gets read from db when the process crashes anyway.
+    case Spotify.Cache.user_process(user.nickname) do
+      {:ok, pid} -> Spotify.User.update_token(pid, token)
+      {:error, _error} -> nil
+    end
+
     Accounts.update_user_token(user, token, expires_in)
   end
 

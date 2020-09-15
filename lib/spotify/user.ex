@@ -10,6 +10,8 @@ defmodule Spotify.User do
 
   @ten_seconds 10_000
 
+  # TODO: Maybe Terminate user process after 30 minutes of inactivity (no activity reqyested)
+
   def start_link(nickname) do
     GenServer.start_link(Spotify.User, nickname, name: via_tuple(nickname))
   end
@@ -22,6 +24,10 @@ defmodule Spotify.User do
     GenServer.call(spotify_user, :get_activity)
   end
 
+  def update_token(spotify_user, token) do
+    GenServer.cast(spotify_user, {:update_token, token})
+  end
+
   defp via_tuple(nickname) do
     Spotify.ProcessRegistry.via_tuple({__MODULE__, nickname})
   end
@@ -32,42 +38,51 @@ defmodule Spotify.User do
 
     # TODO: Move me to `handle_continue` without the need to catch exits in two places!
     schedule_activity_update()
-    new_activity = fetch_activity(nickname)
+    %{token: token} = SpotifyWall.Accounts.get_user_by_nickname!(nickname)
+    new_activity = fetch_activity(token)
     maybe_broadcast(nickname, nil, new_activity)
 
-    {:ok, {nickname, new_activity}}
+    {:ok, {nickname, token, new_activity}}
   end
 
   @impl GenServer
-  def handle_call(:get_activity, _from, {nickname, activity}) do
+  def handle_call(:get_activity, _from, {nickname, token, activity}) do
     {
       :reply,
       activity,
-      {nickname, activity}
+      {nickname, token, activity}
+    }
+  end
+
+  # TODO: Store token and automically renew it when it fails.
+  # TODO: Remove Oban.
+  @impl GenServer
+  def handle_cast({:update_token, new_token}, {nickname, _token, activity}) do
+    Logger.info("Token for Spotify User #{nickname} updated.")
+    {
+      :noreply,
+      {nickname, new_token, activity}
     }
   end
 
   # Periodically update the users activity.
   @impl GenServer
-  def handle_info(:update_activity, {nickname, activity}) do
+  def handle_info(:update_activity, {nickname, token, activity}) do
     schedule_activity_update()
-    new_activity = fetch_activity(nickname)
+    new_activity = fetch_activity(token)
     maybe_broadcast(nickname, activity, new_activity)
 
-    {:noreply, {nickname, new_activity}}
+    {:noreply, {nickname, token, new_activity}}
   end
 
   @impl GenServer
   # Broadcast activity as `nil` if the user process is about to die.
-  def terminate(reason, {nickname, activity}) do
+  def terminate(reason, {nickname, _token, activity}) do
     Logger.info("Spotify User #{nickname} terminated. Reason: #{Kernel.inspect(reason)}")
     maybe_broadcast(nickname, activity, nil)
   end
 
-  # TODO: Store token and automically renew it when it fails.
-  # TODO: Remove Oban.
-  defp fetch_activity(nickname) do
-    %{token: token} = SpotifyWall.Accounts.get_user_by_nickname!(nickname)
+  defp fetch_activity(token) do
     Spotify.Client.get_activity(token)
   end
 

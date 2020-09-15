@@ -16,7 +16,7 @@ defmodule SpotifyWallWeb.WallController do
     render(conn, "index.html", walls: walls)
   end
 
-  def new(conn, _params, current_user) do
+  def new(conn, _params, _current_user) do
     changeset = Wall.changeset(%Wall{}, %{})
     render(conn, "new.html", changeset: changeset)
   end
