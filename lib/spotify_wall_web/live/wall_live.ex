@@ -5,6 +5,10 @@ defmodule SpotifyWallWeb.WallLive do
   alias SpotifyWall.Memberships
   alias SpotifyWall.Walls
 
+  alias SpotifyWall.Spotify.Activities
+  alias SpotifyWall.Spotify.Cache
+  alias SpotifyWall.Spotify.Session
+
   @impl true
   def mount(%{"id" => wall_id}, %{"user_id" => user_id} = _session, socket) do
     users =
@@ -13,10 +17,10 @@ defmodule SpotifyWallWeb.WallLive do
       |> Memberships.get_members()
       |> Enum.map(fn %{user: u} -> {u.nickname, get_activity(u)} end)
 
-    # TODO: Make it clearer that we start each users process with get_activity and subscribe each even if we don't find an acitvity for him.
+    # TODO: Make it clearer that we start a session for each user with get_activity and subscribe each even if we don't find an acitvity for him.
     if connected?(socket) do
       Enum.each(users, fn {nickname, _activity} ->
-        Spotify.Activities.subscribe_to(nickname)
+        Activities.subscribe_to(nickname)
       end)
     end
 
@@ -42,8 +46,8 @@ defmodule SpotifyWallWeb.WallLive do
   end
 
   defp get_activity(user) do
-    case Spotify.Cache.user_process(user.nickname) do
-      {:ok, pid} -> Spotify.User.get_activity(pid)
+    case Cache.session_process(user.nickname) do
+      {:ok, pid} -> Session.get_activity(pid)
       {:error, _error} -> nil
     end
   end

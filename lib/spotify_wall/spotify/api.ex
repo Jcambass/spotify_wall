@@ -1,4 +1,4 @@
-defmodule Spotify.API do
+defmodule SpotifyWall.Spotify.API do
   @moduledoc """
   This module implements an API Client for the Spotify API.
   """
@@ -9,7 +9,7 @@ defmodule Spotify.API do
   plug Tesla.Middleware.FormUrlencoded
   plug Tesla.Middleware.Telemetry
 
-  alias Spotify.Activity
+  alias SpotifyWall.Spotify.Activity
 
   @doc """
   Fetches a new access token for a given refresh_token.

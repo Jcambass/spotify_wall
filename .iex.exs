@@ -7,5 +7,5 @@ alias SpotifyWall.Invitations
 alias SpotifyWall.Invitations.Invitation
 alias SpotifyWall.Walls
 alias SpotifyWall.Walls.Wall
-alias Spotify.Client
+alias SpotifyWall.Spotify.Client
 import Ecto.Query

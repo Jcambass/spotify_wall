@@ -1,9 +1,13 @@
-defmodule Spotify.User do
+defmodule SpotifyWall.Spotify.Session do
   @moduledoc """
-  This module implements a user process that holds the currently playing track for a nickname.
+  This module implements a session process that holds the currently playing track for a nickname.
   The current activity is fetched when creating the process and is periodically updated every 10 seconds.
   The cached activity can be retrieved from the process anytime.
   """
+
+  alias SpotifyWall.Spotify.SessionRegistry
+  alias SpotifyWall.Spotify.Client
+  alias SpotifyWall.Spotify.Activities
 
   use GenServer, restart: :temporary
   require Logger
@@ -13,28 +17,28 @@ defmodule Spotify.User do
   # TODO: Maybe Terminate user process after 30 minutes of inactivity (no activity reqyested)
 
   def start_link(nickname) do
-    GenServer.start_link(Spotify.User, nickname, name: via_tuple(nickname))
+    GenServer.start_link(__MODULE__, nickname, name: via_tuple(nickname))
   end
 
   @doc """
-  Retrieves the stored current activity from the `Spotify.User` process `spotify_user`.
+  Retrieves the stored current activity from the `Spotify.Session` process `session`.
   Returns `nil` as the activity if the user process has crashed.
   """
-  def get_activity(spotify_user) do
-    GenServer.call(spotify_user, :get_activity)
+  def get_activity(session) do
+    GenServer.call(session, :get_activity)
   end
 
-  def update_token(spotify_user, token) do
-    GenServer.cast(spotify_user, {:update_token, token})
+  def update_token(session, token) do
+    GenServer.cast(session, {:update_token, token})
   end
 
   defp via_tuple(nickname) do
-    Spotify.ProcessRegistry.via_tuple({__MODULE__, nickname})
+    SessionRegistry.via_tuple(nickname)
   end
 
   @impl GenServer
   def init(nickname) do
-    Logger.info("Starting Spotify User for #{nickname}")
+    Logger.info("Starting Spotify Session for #{nickname}")
 
     # TODO: Move me to `handle_continue` without the need to catch exits in two places!
     schedule_activity_update()
@@ -58,7 +62,7 @@ defmodule Spotify.User do
   # TODO: Remove Oban.
   @impl GenServer
   def handle_cast({:update_token, new_token}, {nickname, _token, activity}) do
-    Logger.info("Token for Spotify User #{nickname} updated.")
+    Logger.info("Token for Spotify Session #{nickname} updated.")
     {
       :noreply,
       {nickname, new_token, activity}
@@ -78,17 +82,17 @@ defmodule Spotify.User do
   @impl GenServer
   # Broadcast activity as `nil` if the user process is about to die.
   def terminate(reason, {nickname, _token, activity}) do
-    Logger.info("Spotify User #{nickname} terminated. Reason: #{Kernel.inspect(reason)}")
+    Logger.info("Spotify Session #{nickname} terminated. Reason: #{Kernel.inspect(reason)}")
     maybe_broadcast(nickname, activity, nil)
   end
 
   defp fetch_activity(token) do
-    Spotify.Client.get_activity(token)
+    Client.get_activity(token)
   end
 
   defp maybe_broadcast(nickname, activity, new_activity) do
     if activity != new_activity do
-      Spotify.Activities.broadcast(nickname, new_activity)
+      Activities.broadcast(nickname, new_activity)
     end
   end
 

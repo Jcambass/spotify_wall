@@ -1,4 +1,4 @@
-defmodule Spotify.Activities do
+defmodule SpotifyWall.Spotify.Activities do
   @moduledoc """
   This module providers a simple wrapper around the `Phoenix.PubSub` and can be used to broadcast and subscribe to `activities` updates.
   """

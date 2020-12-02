@@ -1,6 +1,6 @@
-defmodule Spotify.ProcessRegistry do
+defmodule SpotifyWall.Spotify.SessionRegistry do
   @moduledoc """
-  This module provides a node-local process registry that is used to register and retrieve `Spotify.User` processes.
+  This module provides a node-local process registry that is used to register and retrieve `Spotify.Session` processes.
   """
 
   def start_link do

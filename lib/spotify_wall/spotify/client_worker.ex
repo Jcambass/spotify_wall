@@ -1,10 +1,12 @@
-defmodule Spotify.ClientWorker do
+defmodule SpotifyWall.Spotify.ClientWorker do
   @moduledoc """
   This module implements a worker process that is ment to be managed by the `Spotify.Worker` pool.
   It serializes interactions with Spotify.
   """
   use GenServer
   require Logger
+
+  alias SpotifyWall.Spotify.API
 
   def start_link(_args) do
     Logger.info("Starting Spotify Client worker.")
@@ -32,14 +34,14 @@ defmodule Spotify.ClientWorker do
 
   @impl GenServer
   def handle_call({:get_activity, token}, _from, state) do
-    res = Spotify.API.current_activity(token)
+    res = API.current_activity(token)
 
     {:reply, res, state}
   end
 
   @impl GenServer
   def handle_call({:refresh_access_token, refresh_token}, _from, state) do
-    res = Spotify.API.refresh_access_token(refresh_token)
+    res = API.refresh_access_token(refresh_token)
 
     {:reply, res, state}
   end

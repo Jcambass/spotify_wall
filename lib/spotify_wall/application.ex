@@ -16,9 +16,9 @@ defmodule SpotifyWall.Application do
       # Start the Endpoint (http/https)
       SpotifyWallWeb.Endpoint,
       {Oban, oban_config()},
-      Spotify.ProcessRegistry,
-      Spotify.Client,
-      Spotify.Cache
+      SpotifyWall.Spotify.SessionRegistry,
+      SpotifyWall.Spotify.Client,
+      SpotifyWall.Spotify.Cache
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

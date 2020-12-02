@@ -4,7 +4,9 @@ defmodule SpotifyWall.Workers.RefreshUserToken do
     unique: [period: :infinity, states: [:available, :scheduled, :executing]]
 
   alias SpotifyWall.Accounts
-  alias Spotify.Client
+  alias SpotifyWall.Spotify.Client
+  alias SpotifyWall.Spotify.Cache
+  alias SpotifyWall.Spotify.Session
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"user_id" => user_id}}) do
@@ -21,8 +23,8 @@ defmodule SpotifyWall.Workers.RefreshUserToken do
   defp update_token(user, token, expires_in) do
     # TODO: Decide if we need to handle errors here?
     # The token gets read from db when the process crashes anyway.
-    case Spotify.Cache.user_process(user.nickname) do
-      {:ok, pid} -> Spotify.User.update_token(pid, token)
+    case Cache.session_process(user.nickname) do
+      {:ok, pid} -> Session.update_token(pid, token)
       {:error, _error} -> nil
     end
 

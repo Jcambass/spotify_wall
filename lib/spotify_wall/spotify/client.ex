@@ -1,8 +1,10 @@
-defmodule Spotify.Client do
+defmodule SpotifyWall.Spotify.Client do
   @moduledoc """
   This module implements a pool of `Spotify.ClientWorker` processes.
   This prevents us from doing to many concurrent requests to Spotify.
   """
+
+  alias SpotifyWall.Spotify.ClientWorker
 
   @pool_size 10
 
@@ -11,7 +13,7 @@ defmodule Spotify.Client do
       __MODULE__,
       [
         name: {:local, __MODULE__},
-        worker_module: Spotify.ClientWorker,
+        worker_module: ClientWorker,
         size: @pool_size
       ],
       []
@@ -24,7 +26,7 @@ defmodule Spotify.Client do
   def get_activity(token) do
     :poolboy.transaction(
       __MODULE__,
-      fn worker_pid -> Spotify.ClientWorker.get_activity(worker_pid, token) end
+      fn worker_pid -> ClientWorker.get_activity(worker_pid, token) end
     )
   end
 
@@ -34,7 +36,7 @@ defmodule Spotify.Client do
   def refresh_access_token(refresh_token) do
     :poolboy.transaction(
       __MODULE__,
-      fn worker_pid -> Spotify.ClientWorker.refresh_access_token(worker_pid, refresh_token) end
+      fn worker_pid -> ClientWorker.refresh_access_token(worker_pid, refresh_token) end
     )
   end
 end
