@@ -50,9 +50,10 @@ defmodule SpotifyWall.MixProject do
       {:ueberauth, "~> 0.6"},
       {:ueberauth_spotify, "0.2.1"},
       {:tesla, "~> 1.3.0"},
+      # TODO: Remove oban after migration ran.
       {:oban, "~> 2.1"},
-      {:poolboy, "~> 1.5"},
       {:ecto_psql_extras, "~> 0.2"},
+      {:gen_state_machine, "~> 3.0"},
       {:ex_doc, "~> 0.22", only: :dev, runtime: false},
       {:logflare_logger_backend, "~> 0.7.6"},
       {:benchee, "~> 1.0", only: :dev}

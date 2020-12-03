@@ -20,7 +20,7 @@ defmodule SpotifyWallWeb.LiveDashboard.SpotifySessionsPage do
   end
 
   defp fetch_sessions(_params, _node) do
-    sessions = SpotifyWall.Spotify.Cache.sessions()
+    sessions = SpotifyWall.Spotify.Supervisor.sessions()
 
     {sessions, length(sessions)}
   end
@@ -32,7 +32,8 @@ defmodule SpotifyWallWeb.LiveDashboard.SpotifySessionsPage do
         field: :pid,
         header: "Worker PID",
         format: &(&1 |> encode_pid() |> String.replace_prefix("PID", ""))
-      }
+      },
+      %{field: :clients_count, header: "Clients count", sortable: :asc}
     ]
   end
 

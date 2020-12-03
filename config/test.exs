@@ -20,5 +20,3 @@ config :spotify_wall, SpotifyWallWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
-
-config :spotify_wall, Oban, crontab: false, queues: false, plugins: false

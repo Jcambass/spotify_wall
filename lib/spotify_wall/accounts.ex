@@ -19,6 +19,7 @@ defmodule SpotifyWall.Accounts do
 
   def upsert_user(nickname, token, refresh_token, expires_at) do
     Logger.info("upserted_user", user: %{nickname: nickname})
+
     attrs = %{
       nickname: nickname,
       token: token,
@@ -36,7 +37,11 @@ defmodule SpotifyWall.Accounts do
   end
 
   def update_user_token(user, token, expires_in) do
-    Logger.info("updated_user_token", user: %{id: user.id, nickname: user.nickname}, token: %{expires_in: expires_in})
+    Logger.info("updated_user_token",
+      user: %{id: user.id, nickname: user.nickname},
+      token: %{expires_in: expires_in}
+    )
+
     expires_at = DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), expires_in)
 
     User.changeset(user, %{token: token, expires_at: expires_at})

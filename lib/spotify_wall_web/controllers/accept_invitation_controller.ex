@@ -23,7 +23,6 @@ defmodule SpotifyWallWeb.AcceptInvitationController do
     else
       render(conn, "show_not_signed_in.html", invitation: invitation)
     end
-
   end
 
   def accept(conn, %{"id" => invitation_token}, current_user) do

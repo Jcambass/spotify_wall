@@ -74,9 +74,11 @@ defmodule SpotifyWallWeb.Router do
 
   scope "/" do
     pipe_through [:browser, :admin]
-    live_dashboard "/dashboard", metrics: SpotifyWallWeb.Telemetry,
+
+    live_dashboard "/dashboard",
+      metrics: SpotifyWallWeb.Telemetry,
       additional_pages: [
-        spotify_sessions: SpotifyWallWeb.LiveDashboard.SpotifySessionsPage,
+        spotify_sessions: SpotifyWallWeb.LiveDashboard.SpotifySessionsPage
       ],
       ecto_repos: [SpotifyWall.Repo]
   end

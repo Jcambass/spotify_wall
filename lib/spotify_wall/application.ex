@@ -15,10 +15,7 @@ defmodule SpotifyWall.Application do
       {Phoenix.PubSub, name: SpotifyWall.PubSub},
       # Start the Endpoint (http/https)
       SpotifyWallWeb.Endpoint,
-      {Oban, oban_config()},
-      SpotifyWall.Spotify.SessionRegistry,
-      SpotifyWall.Spotify.Client,
-      SpotifyWall.Spotify.Cache
+      SpotifyWall.Spotify.Supervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -32,10 +29,5 @@ defmodule SpotifyWall.Application do
   def config_change(changed, _new, removed) do
     SpotifyWallWeb.Endpoint.config_change(changed, removed)
     :ok
-  end
-
-  # Conditionally disable crontab, queues, or plugins here.
-  defp oban_config do
-    Application.get_env(:spotify_wall, Oban)
   end
 end

@@ -1,102 +1,217 @@
 defmodule SpotifyWall.Spotify.Session do
-  @moduledoc """
-  This module implements a session process that holds the currently playing track for a nickname.
-  The current activity is fetched when creating the process and is periodically updated every 10 seconds.
-  The cached activity can be retrieved from the process anytime.
-  """
+  use GenStateMachine, restart: :transient
 
   alias SpotifyWall.Spotify.SessionRegistry
   alias SpotifyWall.Spotify.Client
-  alias SpotifyWall.Spotify.Activities
+  alias Phoenix.PubSub
 
-  use GenServer, restart: :temporary
-  require Logger
+  @default_timeouts %{
+    refresh: 10_000,
+    retry: 5000,
+    inactivity: 30_000
+  }
 
-  @ten_seconds 10_000
+  defstruct session_id: nil,
+            credentials: nil,
+            user: nil,
+            now_playing: nil,
+            subscribers: MapSet.new(),
+            timeouts: @default_timeouts
 
-  # TODO: Maybe Terminate user process after 30 minutes of inactivity (no activity reqyested)
+  ################################################################################
+  ################################## PUBLIC API ##################################
+  ################################################################################
 
-  def start_link(nickname) do
-    GenServer.start_link(__MODULE__, nickname, name: via_tuple(nickname))
+  def start_link({session_id, credentials}),
+    do: start_link(session_id, credentials, timeouts: @default_timeouts)
+
+  def start_link({session_id, credentials, start_opts}),
+    do: start_link(session_id, credentials, start_opts)
+
+  def start_link(session_id, credentials, start_opts) do
+    GenStateMachine.start_link(__MODULE__, {session_id, credentials, start_opts},
+      name: via(session_id)
+    )
   end
 
-  @doc """
-  Retrieves the stored current activity from the `Spotify.Session` process `session`.
-  Returns `nil` as the activity if the user process has crashed.
-  """
-  def get_activity(session) do
-    GenServer.call(session, :get_activity)
+  def setup(session_id, credentials) do
+    SpotifyWall.Spotify.Supervisor.ensure_session(session_id, credentials)
   end
 
-  def update_token(session, token) do
-    GenServer.cast(session, {:update_token, token})
+  def subscribe(session_id) do
+    PubSub.subscribe(SpotifyWall.PubSub, session_id)
+    GenStateMachine.call(via(session_id), {:subscribe, self()})
   end
 
-  defp via_tuple(nickname) do
-    SessionRegistry.via_tuple(nickname)
+  def subscribers_count(session_id) do
+    GenStateMachine.call(via(session_id), :subscribers_count)
   end
 
-  @impl GenServer
-  def init(nickname) do
-    Logger.info("Starting Spotify Session for #{nickname}")
-
-    # TODO: Move me to `handle_continue` without the need to catch exits in two places!
-    schedule_activity_update()
-    %{token: token} = SpotifyWall.Accounts.get_user_by_nickname!(nickname)
-    new_activity = fetch_activity(token)
-    maybe_broadcast(nickname, nil, new_activity)
-
-    {:ok, {nickname, token, new_activity}}
+  def broadcast(session_id, message) do
+    PubSub.broadcast(SpotifyWall.PubSub, session_id, message)
   end
 
-  @impl GenServer
-  def handle_call(:get_activity, _from, {nickname, token, activity}) do
-    {
-      :reply,
-      activity,
-      {nickname, token, activity}
-    }
+  def now_playing(session_id) do
+    GenStateMachine.call(via(session_id), :now_playing)
   end
 
-  # TODO: Store token and automically renew it when it fails.
-  # TODO: Remove Oban.
-  @impl GenServer
-  def handle_cast({:update_token, new_token}, {nickname, _token, activity}) do
-    Logger.info("Token for Spotify Session #{nickname} updated.")
-    {
-      :noreply,
-      {nickname, new_token, activity}
-    }
+  ################################################################################
+  ################################## CALLBACKS ###################################
+  ################################################################################
+
+  @doc false
+  @impl true
+  def init({session_id, credentials, start_opts}) do
+    timeouts = Keyword.get(start_opts, :timeouts, @default_timeouts)
+    data = %__MODULE__{session_id: session_id, credentials: credentials, timeouts: timeouts}
+    {:ok, :not_authenticated, data, {:next_event, :internal, :authenticate}}
   end
 
-  # Periodically update the users activity.
-  @impl GenServer
-  def handle_info(:update_activity, {nickname, token, activity}) do
-    schedule_activity_update()
-    new_activity = fetch_activity(token)
-    maybe_broadcast(nickname, activity, new_activity)
+  @doc false
+  @impl true
+  def handle_event(event_type, :authenticate, :not_authenticated, data)
+      when event_type in [:internal, :state_timeout] do
+    case Client.get_profile(data.credentials.token) do
+      {:ok, user} ->
+        data = %{data | user: user}
 
-    {:noreply, {nickname, token, new_activity}}
-  end
+        actions = [
+          {:next_event, :internal, :get_now_playing},
+          {:state_timeout, data.timeouts.refresh, :refresh_data},
+          {{:timeout, :inactivity}, data.timeouts.inactivity, :expired}
+        ]
 
-  @impl GenServer
-  # Broadcast activity as `nil` if the user process is about to die.
-  def terminate(reason, {nickname, _token, activity}) do
-    Logger.info("Spotify Session #{nickname} terminated. Reason: #{Kernel.inspect(reason)}")
-    maybe_broadcast(nickname, activity, nil)
-  end
+        {:next_state, :authenticated, data, actions}
 
-  defp fetch_activity(token) do
-    Client.get_activity(token)
-  end
+      {:error, :invalid_token} ->
+        {:stop, :invalid_token}
 
-  defp maybe_broadcast(nickname, activity, new_activity) do
-    if activity != new_activity do
-      Activities.broadcast(nickname, new_activity)
+      {:error, :expired_token} ->
+        action = {:next_event, :internal, :refresh}
+        {:next_state, :expired, data, action}
+
+      # abnormal http error, retry in 5 seconds
+      {:error, _reason} ->
+        action = {:state_timeout, data.timeouts.retry, :authenticate}
+        {:keep_state_and_data, action}
     end
   end
 
-  defp schedule_activity_update() do
-    Process.send_after(self(), :update_activity, @ten_seconds)
+  # TODO: Handle refresh token revoked error.
+  # TODO: Do not store token  but initialy retrieve one via refresh token.
+  def handle_event(event_type, :refresh, :expired, data)
+      when event_type in [:internal, :state_timeout] do
+    case Client.get_token(data.credentials.refresh_token) do
+      {:ok, new_credentials} ->
+        data = %{data | credentials: new_credentials}
+        {:next_state, :not_authenticated, data, {:next_event, :internal, :authenticate}}
+
+      {:error, status} when is_integer(status) ->
+        {:stop, :invalid_refresh_token}
+
+      # abnormal http error, retry in 5 seconds
+      {:error, _reason} ->
+        {:keep_state_and_data, {:state_timeout, data.timeouts.retry, :refresh}}
+    end
+  end
+
+  def handle_event(:internal, :get_now_playing, :authenticated, data) do
+    case Client.now_playing(data.credentials.token) do
+      {:error, :invalid_token} ->
+        {:stop, :invalid_token}
+
+      {:error, :expired_token} ->
+        action = {:next_event, :internal, :refresh}
+        {:next_state, :expired, data, action}
+
+      # abnormal http error, retry in 5 seconds
+      {:error, _reason} ->
+        action = {:state_timeout, data.timeouts.retry, :get_now_playing}
+        {:keep_state_and_data, action}
+
+      {:ok, now_playing} ->
+        if data.now_playing !== now_playing do
+          broadcast(data.session_id, {:now_playing, data.session_id, now_playing})
+        end
+
+        data = %{data | now_playing: now_playing}
+
+        {:keep_state, data}
+    end
+  end
+
+  def handle_event(:state_timeout, :refresh_data, :authenticated, data) do
+    with {:ok, now_playing} <- Client.now_playing(data.credentials.token) do
+      if data.now_playing !== now_playing do
+        broadcast(data.session_id, {:now_playing, data.session_id, now_playing})
+      end
+
+      data = %{data | now_playing: now_playing}
+
+      action = {:state_timeout, data.timeouts.refresh, :refresh_data}
+
+      {:keep_state, data, action}
+    else
+      {:error, :invalid_token} ->
+        {:stop, :invalid_token}
+
+      {:error, :expired_token} ->
+        action = {:next_event, :internal, :refresh}
+        {:next_state, :expired, data, action}
+
+      # abnormal http error, retry in 5 seconds
+      {:error, _reason} ->
+        action = {:state_timeout, data.timeouts.retry, :refresh_data}
+        {:keep_state_and_data, action}
+    end
+  end
+
+  def handle_event({:call, from}, {:subscribe, pid}, _state, data) do
+    new_subscribers = MapSet.put(data.subscribers, pid)
+    Process.monitor(pid)
+    action = {:reply, from, :ok}
+    {:keep_state, %{data | subscribers: new_subscribers}, action}
+  end
+
+  def handle_event({:call, from}, :subscribers_count, _state, data) do
+    action = {:reply, from, MapSet.size(data.subscribers)}
+    {:keep_state_and_data, action}
+  end
+
+  def handle_event({:call, from}, msg, :authenticated, data) do
+    handle_authenticated_call(from, msg, data)
+  end
+
+  def handle_event({:call, from}, _request, _state, _data) do
+    action = {:reply, from, {:error, :not_authenticated}}
+    {:keep_state_and_data, action}
+  end
+
+  def handle_event({:timeout, :inactivity}, :expired, _state, data) do
+    if MapSet.size(data.subscribers) == 0 do
+      {:stop, :normal}
+    else
+      action = {{:timeout, :inactivity}, data.timeouts.inactivity, :expired}
+      {:keep_state_and_data, action}
+    end
+  end
+
+  def handle_event(:info, {:DOWN, _ref, :process, pid, _reason}, _state, data) do
+    new_subscribers = MapSet.delete(data.subscribers, pid)
+
+    {:keep_state, %{data | subscribers: new_subscribers}}
+  end
+
+  ################################################################################
+  ########################### INTERNAL IMPLEMENTATION ############################
+  ################################################################################
+
+  defp handle_authenticated_call(from, :now_playing, data) do
+    action = {:reply, from, data.now_playing}
+    {:keep_state_and_data, action}
+  end
+
+  defp via(session_id) do
+    {:via, Registry, {SessionRegistry, session_id}}
   end
 end
