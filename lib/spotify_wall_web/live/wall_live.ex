@@ -14,15 +14,24 @@ defmodule SpotifyWallWeb.WallLive do
       |> Walls.get_wall!(wall_id)
       |> Memberships.get_members()
       |> Enum.map(fn %{user: u} ->
-        Session.setup(u.nickname, Credentials.from_user(u))
-        {u.nickname, Session.now_playing(u.nickname)}
+        # TODO: sending a message to a dead proccess
+        # figure out how the error reporting works
+        # Maybe add separate state for revoked tokens instead of shutting the process down
+        # Alternatively somehow handle the dead process
+        case Session.setup(u.nickname, Credentials.from_user(u)) do
+          # TODO: Solve this problem in another more sane way.
+          :ok ->
+            try do
+              if connected?(socket) do
+                Session.subscribe(u.nickname)
+              end
+              {u.nickname, Session.now_playing(u.nickname)}
+            catch
+              :exit, _ -> {u.nickname, nil}
+            end
+          _ -> {u.nickname, nil}
+        end
       end)
-
-    if connected?(socket) do
-      Enum.each(users, fn {nickname, _activity} ->
-        Session.subscribe(nickname)
-      end)
-    end
 
     users =
       users

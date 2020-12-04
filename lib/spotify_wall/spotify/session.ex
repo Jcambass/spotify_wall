@@ -1,5 +1,5 @@
 defmodule SpotifyWall.Spotify.Session do
-  use GenStateMachine, restart: :transient
+  use GenStateMachine, restart: :temporary
 
   alias SpotifyWall.Spotify.SessionRegistry
   alias SpotifyWall.Spotify.Client
@@ -97,7 +97,6 @@ defmodule SpotifyWall.Spotify.Session do
     end
   end
 
-  # TODO: Handle refresh token revoked error.
   # TODO: Do not store token  but initialy retrieve one via refresh token.
   def handle_event(event_type, :refresh, :expired, data)
       when event_type in [:internal, :state_timeout] do
