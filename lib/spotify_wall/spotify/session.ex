@@ -55,6 +55,10 @@ defmodule SpotifyWall.Spotify.Session do
     GenStateMachine.call(via(session_id), :now_playing)
   end
 
+  def full_user_name(session_id) do
+    GenStateMachine.call(via(session_id), :full_user_name)
+  end
+
   ################################################################################
   ################################## CALLBACKS ###################################
   ################################################################################
@@ -174,6 +178,16 @@ defmodule SpotifyWall.Spotify.Session do
 
   def handle_event({:call, from}, :subscribers_count, _state, data) do
     action = {:reply, from, MapSet.size(data.subscribers)}
+    {:keep_state_and_data, action}
+  end
+
+  def handle_event({:call, from}, :full_user_name, :authenticated, data) do
+    name = case data.user do
+      nil -> data.session_id
+      user -> user.name
+    end
+
+    action = {:reply, from, name}
     {:keep_state_and_data, action}
   end
 
