@@ -23,6 +23,7 @@ defmodule SpotifyWall.Memberships do
               [constraint: :unique, constraint_name: "memberships_wall_id_user_id_index"]}
          ]
        }} ->
+        Logger.info("already_member_of_wall", wall: %{id: wall.id}, user: %{id: user.id})
         {:error, :already_member}
 
       error ->

@@ -23,6 +23,7 @@ defmodule SpotifyWall.Spotify.Client do
          ) do
       {:ok, %{status: 200} = response} ->
         track_success(:get_token)
+
         auth_data =
           response.body
           |> parse_auth_data(refresh_token)
@@ -40,6 +41,7 @@ defmodule SpotifyWall.Spotify.Client do
          ) do
       {:ok, %{status: 200} = response} ->
         track_success(:get_profile)
+
         user =
           response.body
           |> parse_profile()
@@ -61,6 +63,7 @@ defmodule SpotifyWall.Spotify.Client do
 
       {:ok, %{status: 200} = response} ->
         track_success(:now_playing)
+
         activity =
           response.body
           |> parse_now_playing()
@@ -79,13 +82,15 @@ defmodule SpotifyWall.Spotify.Client do
     Base.encode64("#{client_id}:#{client_secret}")
   end
 
-  defp parse_now_playing(%{ "item" => %{
-         "album" => %{"name" => album_name, "images" => images},
-         "artists" => artists,
-         "preview_url" => preview_url,
-         "name" => track_name,
-         "external_urls" => %{"spotify" => spotify_url}
-       }}) do
+  defp parse_now_playing(%{
+         "item" => %{
+           "album" => %{"name" => album_name, "images" => images},
+           "artists" => artists,
+           "preview_url" => preview_url,
+           "name" => track_name,
+           "external_urls" => %{"spotify" => spotify_url}
+         }
+       }) do
     image = Map.get(List.first(images), "url")
 
     artists =
@@ -106,7 +111,7 @@ defmodule SpotifyWall.Spotify.Client do
   defp parse_auth_data(data, refresh_token) do
     %Credentials{
       refresh_token: refresh_token,
-      token: data["access_token"],
+      token: data["access_token"]
     }
   end
 

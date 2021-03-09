@@ -182,10 +182,11 @@ defmodule SpotifyWall.Spotify.Session do
   end
 
   def handle_event({:call, from}, :full_user_name, :authenticated, data) do
-    name = case data.user do
-      nil -> data.session_id
-      user -> user.name
-    end
+    name =
+      case data.user do
+        nil -> data.session_id
+        user -> user.name
+      end
 
     action = {:reply, from, name}
     {:keep_state_and_data, action}

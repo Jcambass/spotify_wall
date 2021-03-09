@@ -5,6 +5,7 @@ defmodule SpotifyWallWeb.WallController do
   alias SpotifyWall.Walls.Wall
   alias SpotifyWall.Memberships
   alias SpotifyWall.Invitations
+  alias SpotifyWall.Join
 
   def action(conn, _) do
     args = [conn, conn.params, conn.assigns.current_user]
@@ -32,13 +33,11 @@ defmodule SpotifyWallWeb.WallController do
     wall = Walls.get_owned_wall!(current_user, wall_id)
     changeset = Wall.changeset(wall, %{})
     memberships = Memberships.get_members(wall)
-    invitations = Invitations.list(wall)
 
     render(conn, "edit.html",
       changeset: changeset,
       wall: wall,
-      memberships: memberships,
-      invitations: invitations
+      memberships: memberships
     )
   end
 
@@ -61,4 +60,11 @@ defmodule SpotifyWallWeb.WallController do
     Walls.delete!(wall)
     redirect(conn, to: Routes.wall_path(conn, :index))
   end
+
+  def revoke_join_link(conn, %{"id" => wall_id}, current_user) do
+    wall = Walls.get_owned_wall!(current_user, wall_id)
+    |> Join.revoke_token!()
+    redirect(conn, to: Routes.wall_path(conn, :edit, wall))
+  end
+
 end

@@ -25,11 +25,14 @@ defmodule SpotifyWallWeb.WallLive do
               if connected?(socket) do
                 Session.subscribe(u.nickname)
               end
+
               {Session.full_user_name(u.nickname), Session.now_playing(u.nickname)}
             catch
               :exit, _ -> {u.nickname, nil}
             end
-          _ -> {u.nickname, nil}
+
+          _ ->
+            {u.nickname, nil}
         end
       end)
 

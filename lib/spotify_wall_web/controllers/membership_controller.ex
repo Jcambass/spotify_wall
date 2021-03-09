@@ -11,7 +11,6 @@ defmodule SpotifyWallWeb.MembershipController do
 
   def delete(conn, %{"wall_id" => wall_id, "id" => user_id}, current_user) do
     wall = Walls.get_owned_wall!(current_user, wall_id)
-    # TODO: Add confirmation dialog
     # TODO: Add flash
     if current_user.id == user_id do
       redirect(conn, to: Routes.wall_path(conn, :edit, wall.id))

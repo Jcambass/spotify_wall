@@ -41,10 +41,12 @@ defmodule SpotifyWallWeb.Router do
   scope "/", SpotifyWallWeb do
     pipe_through :browser
 
-    get "/invitations/:id", AcceptInvitationController, :show
-    # TODO: Ideally we only had `put` and no `get` here.
-    put "/invitations/:id/accept", AcceptInvitationController, :accept
-    get "/invitations/:id/accept", AcceptInvitationController, :accept
+    get "/join/:id", JoinController, :show
+
+    # TODO: Better wording here than accept?
+    put "/join/:id/accept", JoinController, :accept
+    # NOTE: We have to support get here since spotify will call this after the user has signed in.
+    get "/join/:id/accept", JoinController, :accept
   end
 
   scope "/", SpotifyWallWeb do
@@ -52,9 +54,8 @@ defmodule SpotifyWallWeb.Router do
 
     resources "/walls", WallController, except: [:show] do
       delete "/members/:id", MembershipController, :delete
-      delete "/invitations/:id", InvitationController, :delete
-      post "/invitations", InvitationController, :create
     end
+    put "/walls/:id/revoke_join", WallController, :revoke_join_link
 
     live "/walls/:id/", WallLive
   end

@@ -9,13 +9,7 @@ defmodule SpotifyWall.Walls do
   require Logger
 
   def create(user, name) do
-    wall =
-      %Wall{}
-      |> Wall.changeset(%{name: name})
-      |> Ecto.Changeset.put_assoc(:owner, user, required: true)
-      |> Repo.insert()
-
-    case wall do
+    case Wall.create_changeset(user, %{name: name}) |> Repo.insert() do
       {:ok, wall} ->
         Logger.info("created_wall", wall: %{id: wall.id, name: name}, owner: %{id: user.id})
         Memberships.add_member(wall, user)

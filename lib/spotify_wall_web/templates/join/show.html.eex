@@ -3,7 +3,7 @@
     <div class="max-w-lg mx-auto rounded-lg shadow-lg overflow-hidden lg:max-w-none lg:flex">
       <div class="bg-white px-6 py-8 lg:p-12">
         <h3 class="text-2xl leading-8 font-extrabold text-gray-900 sm:text-3xl sm:leading-9">
-          You've been invited to <%= @invitation.wall.name %>!
+          You've been invited to <%= @wall.name %>!
         </h3>
         <p class="mt-6 text-base leading-6 text-gray-500">
           Joining this wall on Spotify Wall will enable you to see what other members of the wall are listening at the moment and also take a short listen at their current tunes.
@@ -62,7 +62,7 @@
         </p>
         <div class="mt-6">
           <div class="rounded-md shadow">
-            <%= link "Join #{@invitation.wall.name}", to: Routes.accept_invitation_path(@conn, :accept, @invitation.token), method: :put, class: "flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out" %>
+            <%= link "Join #{@wall.name}", to: Routes.join_path(@conn, :accept, @wall.join_token), method: :put, class: "flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out" %>
           </div>
         </div>
       </div>

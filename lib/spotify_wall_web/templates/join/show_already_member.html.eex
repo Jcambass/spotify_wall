@@ -3,7 +3,7 @@
     <div class="max-w-lg mx-auto rounded-lg shadow-lg overflow-hidden lg:max-w-screen-md lg:flex">
       <div class="bg-white px-6 py-8 lg:p-12">
         <h3 class="text-2xl leading-8 font-extrabold text-gray-900 sm:text-3xl sm:leading-9">
-          You're already a member of <%= @invitation.wall.name %>!
+          You're already a member of <%= @wall.name %>!
         </h3>
         <p class="mt-6 text-base leading-6 text-gray-500">
           You can't accept this invitation since you're already an member of this wall.
@@ -17,7 +17,7 @@
       <div class="py-8 px-6 text-center bg-gray-50 lg:flex-shrink-0 lg:flex lg:flex-col lg:justify-center lg:p-12">
         <div class="mt-6">
           <div class="rounded-md shadow">
-            <%= link "Open #{@invitation.wall.name}", to: Routes.live_path(@conn, SpotifyWallWeb.WallLive, @invitation.wall.id), class: "flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out" %>
+            <%= link "Open #{@wall.name}", to: Routes.live_path(@conn, SpotifyWallWeb.WallLive, @wall.id), class: "flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out" %>
           </div>
         </div>
       </div>
