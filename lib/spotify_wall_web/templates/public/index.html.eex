@@ -43,7 +43,6 @@
         <div class="relative">
           <div class="absolute inset-0 flex flex-col">
             <div class="flex-1"></div>
-            <div class="flex-1 w-full bg-gray-800"></div>
           </div>
           <div class="max-w-screen-xl mx-auto px-4 sm:px-6 pb-16">
             <img class="relative rounded-lg shadow-lg" src="<%= Routes.static_path(@conn, "/images/spotify_wall.png") %>" alt="App screenshot">
