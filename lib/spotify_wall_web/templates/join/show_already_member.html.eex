@@ -6,7 +6,7 @@
           You're already a member of <%= @wall.name %>!
         </h3>
         <p class="mt-6 text-base leading-6 text-gray-500">
-          You can't accept this invitation since you're already an member of this wall.
+          You can't join this wall since you're already an member of this wall.
         </p>
         <div class="mt-8">
           <div class="flex items-center">

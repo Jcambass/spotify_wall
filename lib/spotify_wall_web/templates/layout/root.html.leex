@@ -21,16 +21,15 @@
               </h2>
             </div>
             <div class="mt-4 flex md:mt-0 md:ml-4">
-              <span class="shadow-sm rounded-md">
-                <span class="inline-flex rounded-md shadow-sm">
-                  <%= if @current_user do %>
-                    <span class="relative z-0 inline-flex shadow-sm rounded-md">
-                      <%= button("Log out", to: Routes.session_path(@conn, :delete), method: :delete, class: "ml-px relative inline-flex items-center px-3 py-2 rounded-md border border-transparent text-white bg-gray-600 hover:bg-gray-500 active:bg-gray-700 text-sm leading-5 font-medium focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150") %>
-                    </span>
-                  <% else %>
-                    <%= button("Sign in", to: "/auth/spotify", method: :get, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:shadow-outline-gray focus:border-gray-700 active:bg-gray-700 transition duration-150 ease-in-out") %>
-                  <% end %>
-                </span>
+              <span class="inline-flex">
+                <%= if @current_user do %>
+                  <span class="relative z-0 inline-flex space-x-4">
+                    <%= button("Dashboard", to: Routes.wall_path(@conn, :index), method: :get, class: "ml-px relative inline-flex items-center px-3 py-2 rounded-md border border-transparent text-white bg-gray-600 hover:bg-gray-500 active:bg-gray-700 text-sm leading-5 font-medium focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150") %>
+                    <%= button("Log out", to: Routes.session_path(@conn, :delete), method: :delete, class: "ml-px relative inline-flex items-center px-3 py-2 rounded-md border border-transparent text-white bg-gray-600 hover:bg-gray-500 active:bg-gray-700 text-sm leading-5 font-medium focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150") %>
+                  </span>
+                <% else %>
+                  <%= button("Sign in", to: "/auth/spotify", method: :get, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:shadow-outline-gray focus:border-gray-700 active:bg-gray-700 transition duration-150 ease-in-out") %>
+                <% end %>
               </span>
             </div>
           </div>
