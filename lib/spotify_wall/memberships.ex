@@ -45,7 +45,7 @@ defmodule SpotifyWall.Memberships do
 
     get_membership(wall, user)
     |> Membership.pause_changeset(true)
-    |> Repo.update!
+    |> Repo.update!()
 
     Session.broadcast(user.nickname, {:membership_paused, user})
   end
@@ -55,7 +55,7 @@ defmodule SpotifyWall.Memberships do
 
     get_membership(wall, user)
     |> Membership.pause_changeset(false)
-    |> Repo.update!
+    |> Repo.update!()
 
     Session.broadcast(user.nickname, {:membership_resumed, user})
   end

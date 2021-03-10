@@ -5,6 +5,7 @@ defmodule SpotifyWall.Repo.Migrations.AddJoinLinkToWalls do
     alter table(:walls) do
       add :join_token, :string
     end
+
     create unique_index(:walls, :join_token)
 
     flush()

@@ -37,7 +37,8 @@ defmodule SpotifyWallWeb.WallLive do
               :exit, _ -> fallback_state(u.nickname)
             end
 
-          _ -> fallback_state(u.nickname)
+          _ ->
+            fallback_state(u.nickname)
         end
       end)
 

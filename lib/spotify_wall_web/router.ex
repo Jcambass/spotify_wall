@@ -57,6 +57,8 @@ defmodule SpotifyWallWeb.Router do
       put "/pause", MembershipController, :pause
       put "/resume", MembershipController, :resume
     end
+
+    delete "/walls/:id/leave", WallController, :leave
     put "/walls/:id/revoke_join", WallController, :revoke_join_link
 
     live "/walls/:id/", WallLive

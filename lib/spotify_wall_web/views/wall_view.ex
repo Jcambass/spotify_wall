@@ -1,13 +1,17 @@
 defmodule SpotifyWallWeb.WallView do
   use SpotifyWallWeb, :view
   alias SpotifyWall.Memberships.Membership
+  alias SpotifyWall.Walls.Wall
 
   def is_owner?(wall, user) do
     wall.owner.id == user.id
   end
 
-  def open_modal_var(%Membership{id: id}) do
-    "open_remove_member_#{id}"
+  def open_modal_var(struct) do
+    case struct do
+      %Membership{id: id} -> "open_remove_member_#{id}"
+      %Wall{id: id} -> "open_leave_wall_#{id}"
+    end
   end
 
   def init_open_modal_vars(structs) do
@@ -57,6 +61,15 @@ defmodule SpotifyWallWeb.WallView do
     """
   end
 
+  def leave_button(conn, wall) do
+    ~e"""
+      <a @click="<%= open_modal_var(wall) %> = true" href="#" class="relative w-0 flex-1 inline-flex items-center justify-center py-4 text-sm leading-5 text-gray-700 font-medium border border-transparent rounded-br-lg hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 transition ease-in-out duration-150">
+        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"></path></svg>
+        <span class="ml-3">Leave</span>
+      </a>
+    """
+  end
+
   def wall_actions(conn, membership, current_user) do
     ~e"""
       <div class="-mt-px flex">
@@ -76,6 +89,9 @@ defmodule SpotifyWallWeb.WallView do
           </div>
           <div class="-ml-px w-0 flex-1 flex">
             <%= pause_resume_button(conn, membership) %>
+          </div>
+          <div class="-ml-px w-0 flex-1 flex">
+            <%= leave_button(conn, membership.wall) %>
           </div>
         <% end %>
       </div>

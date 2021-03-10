@@ -10,7 +10,6 @@ defmodule SpotifyWallWeb.MembershipController do
   end
 
   def delete(conn, %{"wall_id" => wall_id, "id" => user_id}, current_user) do
-    # TODO: Add support so that current_user can remove themself from the wall.
     wall = Walls.get_owned_wall!(current_user, wall_id)
     # TODO: Add flash
     if current_user.id == user_id do
