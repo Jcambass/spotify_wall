@@ -2,8 +2,10 @@ defmodule SpotifyWallWeb.WallLive do
   use SpotifyWallWeb, :live_view
 
   alias SpotifyWall.Accounts
+  alias SpotifyWall.Accounts.User
   alias SpotifyWall.Memberships
   alias SpotifyWall.Walls
+  alias SpotifyWall.Walls.Wall
 
   alias SpotifyWall.Spotify.{Session, Credentials}
 
@@ -13,9 +15,6 @@ defmodule SpotifyWallWeb.WallLive do
       Accounts.get_user!(user_id)
       |> Walls.get_wall!(wall_id)
       |> Memberships.get_members()
-      # TODO: Find a way to make this more dynamic. Not needing a page reload!
-      # TODO: Remove user directly from open walls once he pauses sharing!
-      |> Enum.filter(fn %{paused: paused} -> !paused end)
       |> Enum.map(fn %{user: u} ->
         # TODO: sending a message to a dead proccess
         # figure out how the error reporting works
@@ -29,13 +28,16 @@ defmodule SpotifyWallWeb.WallLive do
                 Session.subscribe(u.nickname)
               end
 
-              {Session.full_user_name(u.nickname), Session.now_playing(u.nickname)}
+              if is_active_member?(u.nickname, wall_id) do
+                active_member_state(u.nickname)
+              else
+                not_active_member_state(u.nickname)
+              end
             catch
-              :exit, _ -> {u.nickname, nil}
+              :exit, _ -> fallback_state(u.nickname)
             end
 
-          _ ->
-            {u.nickname, nil}
+          _ -> fallback_state(u.nickname)
         end
       end)
 
@@ -44,19 +46,50 @@ defmodule SpotifyWallWeb.WallLive do
       |> Enum.filter(fn {_nickname, activity} -> activity end)
       |> Map.new()
 
-    {:ok, assign(socket, users: users)}
+    {:ok, assign(socket, users: users, wall_id: wall_id)}
+  end
+
+  defp active_member_state(nickname) do
+    {Session.full_user_name(nickname), Session.now_playing(nickname)}
+  end
+
+  defp not_active_member_state(nickname) do
+    {Session.full_user_name(nickname), nil}
+  end
+
+  defp fallback_state(nickname) do
+    {nickname, nil}
+  end
+
+  # Sends `nil` to `now_playing` to trigger an update and check membership of this wall.
+  # This relies on the fact that the `handle_info` of `now_playing` checks membership of the current wall so that only the paused/removed memberships get updated.
+  def handle_info({:membership_paused, %User{nickname: nickname}}, socket) do
+    send(self(), {:now_playing, nickname, nil})
+    {:noreply, socket}
+  end
+
+  # Sends the current played song to `now_playing` to trigger an update and check membership of this wall.
+  # This relies on the fact that the `handle_info` of `now_playing` checks membership of the current wall so that only the paused/removed memberships get updated.
+  def handle_info({:membership_resumed, %User{nickname: nickname}}, socket) do
+    send(self(), {:now_playing, nickname, Session.now_playing(nickname)})
+    {:noreply, socket}
   end
 
   @impl true
-  # TODO: Maybe ensure that user really belongs to the wall.
   def handle_info({:now_playing, nickname, activity}, socket) do
     fun =
-      if activity do
+      if activity && is_active_member?(nickname, socket.assigns[:wall_id]) do
         fn users -> Map.put(users, nickname, activity) end
       else
         fn users -> Map.delete(users, nickname) end
       end
 
     {:noreply, update(socket, :users, fun)}
+  end
+
+  defp is_active_member?(nickname, wall_id) do
+    user = Accounts.get_user_by_nickname!(nickname)
+    membership = Memberships.get_membership(%Wall{id: wall_id}, user)
+    membership && !membership.paused
   end
 end
