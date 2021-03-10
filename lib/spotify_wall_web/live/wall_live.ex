@@ -13,6 +13,9 @@ defmodule SpotifyWallWeb.WallLive do
       Accounts.get_user!(user_id)
       |> Walls.get_wall!(wall_id)
       |> Memberships.get_members()
+      # TODO: Find a way to make this more dynamic. Not needing a page reload!
+      # TODO: Remove user directly from open walls once he pauses sharing!
+      |> Enum.filter(fn %{paused: paused} -> !paused end)
       |> Enum.map(fn %{user: u} ->
         # TODO: sending a message to a dead proccess
         # figure out how the error reporting works

@@ -4,7 +4,6 @@ defmodule SpotifyWallWeb.WallController do
   alias SpotifyWall.Walls
   alias SpotifyWall.Walls.Wall
   alias SpotifyWall.Memberships
-  alias SpotifyWall.Invitations
   alias SpotifyWall.Join
 
   def action(conn, _) do
@@ -13,8 +12,8 @@ defmodule SpotifyWallWeb.WallController do
   end
 
   def index(conn, _params, current_user) do
-    walls = Walls.get_walls(current_user)
-    render(conn, "index.html", walls: walls)
+    memberships = Walls.get_accessible_walls(current_user)
+    render(conn, "index.html", memberships: memberships)
   end
 
   def new(conn, _params, _current_user) do
@@ -66,5 +65,4 @@ defmodule SpotifyWallWeb.WallController do
     |> Join.revoke_token!()
     redirect(conn, to: Routes.wall_path(conn, :edit, wall))
   end
-
 end

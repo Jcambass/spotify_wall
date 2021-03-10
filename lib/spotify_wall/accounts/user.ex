@@ -8,7 +8,7 @@ defmodule SpotifyWall.Accounts.User do
     field :refresh_token, :string
     field :expires_at, :utc_datetime
 
-    many_to_many :walls, SpotifyWall.Walls.Wall, join_through: "memberships"
+    has_many :memberships, SpotifyWall.Memberships.Membership
 
     timestamps(type: :utc_datetime)
   end

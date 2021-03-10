@@ -42,13 +42,12 @@ defmodule SpotifyWall.Walls do
     |> Repo.preload(:owner)
   end
 
-  def get_walls(user) do
+  def get_accessible_walls(user) do
     user =
       user
-      |> Repo.preload(:walls)
-      |> Repo.preload(walls: :owner)
+      |> Repo.preload(memberships: {from(mem in Membership, order_by: mem.inserted_at), [wall: :owner]})
 
-    user.walls
+    user.memberships
   end
 
   def get_wall!(%User{id: user_id}, wall_id) do
