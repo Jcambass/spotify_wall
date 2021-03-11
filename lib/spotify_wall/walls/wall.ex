@@ -14,7 +14,7 @@ defmodule SpotifyWall.Walls.Wall do
     %__MODULE__{}
     |> changeset(attrs)
     |> put_assoc(:owner, owner, required: true)
-    |> change(join_token: SpotifyWall.Join.generate_join_token())
+    |> change(join_token: SpotifyWall.Memberships.generate_join_token())
   end
 
   def changeset(wall, attrs) do

@@ -11,7 +11,7 @@ defmodule SpotifyWall.Repo.Migrations.AddJoinLinkToWalls do
     flush()
 
     SpotifyWall.Repo.all(SpotifyWall.Walls.Wall)
-    |> Enum.each(&SpotifyWall.Join.revoke_token!/1)
+    |> Enum.each(&SpotifyWall.Memberships.revoke_token!/1)
 
     # NOTE: Not safe with large amount of data but totaly ok when you have no users anyway..
     alter table(:walls) do

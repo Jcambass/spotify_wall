@@ -56,10 +56,11 @@ defmodule SpotifyWallWeb.Router do
       delete "/members/:id", MembershipController, :delete
       put "/pause", MembershipController, :pause
       put "/resume", MembershipController, :resume
+
+      delete "/leave", MembershipController, :leave
+      put "/revoke_join", MembershipController, :revoke_join_link
     end
 
-    delete "/walls/:id/leave", WallController, :leave
-    put "/walls/:id/revoke_join", WallController, :revoke_join_link
 
     live "/walls/:id/", WallLive
   end

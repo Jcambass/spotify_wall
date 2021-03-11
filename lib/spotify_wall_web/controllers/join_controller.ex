@@ -2,7 +2,6 @@ defmodule SpotifyWallWeb.JoinController do
   use SpotifyWallWeb, :controller
 
   alias SpotifyWall.Memberships
-  alias SpotifyWall.Join
 
   plug :authenticate_user when action in [:accept]
 
@@ -12,7 +11,7 @@ defmodule SpotifyWallWeb.JoinController do
   end
 
   def show(conn, %{"id" => join_token}, current_user) do
-    wall = Join.get_wall_by_token!(join_token)
+    wall = Memberships.get_wall_by_token!(join_token)
 
     if current_user do
       if Memberships.is_member?(wall, current_user) do
@@ -26,7 +25,7 @@ defmodule SpotifyWallWeb.JoinController do
   end
 
   def accept(conn, %{"id" => join_token}, current_user) do
-    wall = Join.get_wall_by_token!(join_token)
+    wall = Memberships.get_wall_by_token!(join_token)
 
     case Memberships.add_member(wall, current_user) do
       {:error, :already_member} ->
