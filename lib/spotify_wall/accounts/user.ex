@@ -5,7 +5,6 @@ defmodule SpotifyWall.Accounts.User do
   schema "users" do
     field :nickname, :string
     field :refresh_token, :string
-    field :expires_at, :utc_datetime
 
     has_many :memberships, SpotifyWall.Memberships.Membership
 
@@ -14,8 +13,8 @@ defmodule SpotifyWall.Accounts.User do
 
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:nickname, :refresh_token, :expires_at])
-    |> validate_required([:nickname, :refresh_token, :expires_at])
+    |> cast(attrs, [:nickname, :refresh_token])
+    |> validate_required([:nickname, :refresh_token])
     |> unique_constraint(:nickname)
   end
 end

@@ -3,9 +3,6 @@ defmodule SpotifyWall.Accounts do
   The Accounts context.
   """
 
-  # 20 minutes
-  @refresh_tokens_expiring_in 20 * 60
-
   import Ecto.Query, warn: false
   alias SpotifyWall.Repo
 
@@ -17,13 +14,12 @@ defmodule SpotifyWall.Accounts do
 
   def get_user_by_nickname!(nickname), do: Repo.get_by!(User, nickname: nickname)
 
-  def upsert_user(nickname, refresh_token, expires_at) do
+  def upsert_user(nickname, refresh_token) do
     Logger.info("upserted_user", user: %{nickname: nickname})
 
     attrs = %{
       nickname: nickname,
       refresh_token: refresh_token,
-      expires_at: DateTime.from_unix!(expires_at)
     }
 
     %User{}
@@ -32,15 +28,6 @@ defmodule SpotifyWall.Accounts do
       on_conflict: {:replace_all_except, [:id, :inserted_at]},
       conflict_target: :nickname,
       returning: true
-    )
-  end
-
-  def list_expiring_users do
-    expiration_time = DateTime.add(DateTime.utc_now(), @refresh_tokens_expiring_in)
-
-    Repo.all(
-      from u in User,
-        where: u.expires_at <= ^expiration_time
     )
   end
 
