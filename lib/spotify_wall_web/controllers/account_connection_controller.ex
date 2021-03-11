@@ -14,7 +14,7 @@ defmodule SpotifyWallWeb.AccountConnectionController do
         %{
           assigns: %{
             ueberauth_auth: %{
-              credentials: %{token: token, refresh_token: refresh_token, expires_at: expires_at},
+              credentials: %{refresh_token: refresh_token, expires_at: expires_at},
               info: %{nickname: nickname}
             }
           }
@@ -22,7 +22,7 @@ defmodule SpotifyWallWeb.AccountConnectionController do
         params
       ) do
     # TODO: This is probably quite insecure!
-    user = Accounts.upsert_user(nickname, token, refresh_token, expires_at)
+    user = Accounts.upsert_user(nickname, refresh_token, expires_at)
 
     redirect_url =
       case Map.get(params, "state", nil) do
