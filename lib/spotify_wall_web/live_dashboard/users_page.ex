@@ -17,7 +17,7 @@ defmodule SpotifyWallWeb.LiveDashboard.UsersPage do
     )
   end
 
-  defp fetch_users(_params, _node) do
+  defp fetch_users(%{sort_by: sort_by, sort_dir: sort_dir}, _node) do
     users =
       SpotifyWall.Stats.users_with_wall_count()
       |> Enum.map(fn {u, count} ->
@@ -28,8 +28,26 @@ defmodule SpotifyWallWeb.LiveDashboard.UsersPage do
           walls_count: count
         }
       end)
+      |> sort(sort_by, sort_dir)
 
     {users, length(users)}
+  end
+
+  defp sort(users, nil, _dir) do
+    users
+  end
+
+  defp sort(users, key, dir) do
+    users
+    |> Enum.sort_by(fn user -> Map.get(user, key) end)
+    |> maybe_reverse(dir)
+  end
+
+  defp maybe_reverse(users, dir) do
+    case dir do
+      :asc -> users
+      :desc -> Enum.reverse(users)
+    end
   end
 
   defp columns do
