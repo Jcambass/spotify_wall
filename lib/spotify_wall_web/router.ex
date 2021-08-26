@@ -61,7 +61,6 @@ defmodule SpotifyWallWeb.Router do
       put "/revoke_join", MembershipController, :revoke_join_link
     end
 
-
     live "/walls/:id/", WallLive
   end
 
@@ -84,7 +83,8 @@ defmodule SpotifyWallWeb.Router do
     live_dashboard "/dashboard",
       metrics: SpotifyWallWeb.Telemetry,
       additional_pages: [
-        spotify_sessions: SpotifyWallWeb.LiveDashboard.SpotifySessionsPage
+        spotify_sessions: SpotifyWallWeb.LiveDashboard.SpotifySessionsPage,
+        users: SpotifyWallWeb.LiveDashboard.UsersPage
       ],
       ecto_repos: [SpotifyWall.Repo]
   end

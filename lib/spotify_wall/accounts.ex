@@ -19,7 +19,7 @@ defmodule SpotifyWall.Accounts do
 
     attrs = %{
       nickname: nickname,
-      refresh_token: refresh_token,
+      refresh_token: refresh_token
     }
 
     %User{}

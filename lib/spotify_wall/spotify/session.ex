@@ -175,7 +175,8 @@ defmodule SpotifyWall.Spotify.Session do
 
   @doc false
   @impl true
-  def handle_event(event_type, :refresh, state, data) when state in [:not_authenticated, :expired]
+  def handle_event(event_type, :refresh, state, data)
+      when state in [:not_authenticated, :expired]
       when event_type in [:internal, :state_timeout] do
     case Client.get_token(data.credentials.refresh_token) do
       {:ok, new_credentials} ->
