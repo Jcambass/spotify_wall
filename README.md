@@ -52,7 +52,7 @@ To start sharing again the `Start Sharing` feature can be used.
 
 ## Hosted Version
 
-Currently a hosted, free version can be user under spotifywall.com.
+Currently a hosted, free version can be user under [spotifywall.com](https://spotifywall.com).
 I don't plan to monetize this version but I might decide to shut it down one day, hence this being opensourced.
 
 ## To run SpotifyWall yourself
