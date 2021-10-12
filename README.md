@@ -1,6 +1,6 @@
 # SpotifyWall
 
-Spotify Wall is a small side project mine which allows you to create groups (Walls) for you and your friends or coworkers in order to share the current song you’re listing to on spotify.
+Spotify Wall is a small side project mine which allows you to create groups for you and your friends or coworkers in order to share the current song you’re listing to on spotify.
 
 ## How it works
 
