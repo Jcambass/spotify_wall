@@ -21,7 +21,8 @@ defmodule SpotifyWallWeb.AccountConnectionController do
         } = conn,
         params
       ) do
-    # TODO: This is probably quite insecure!
+    # TODO: Explore using state to prevent CSSRF and store redirection url in cookie.
+
     user = Accounts.upsert_user(nickname, refresh_token)
 
     redirect_url =

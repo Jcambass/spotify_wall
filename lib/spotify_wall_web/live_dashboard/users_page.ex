@@ -37,6 +37,7 @@ defmodule SpotifyWallWeb.LiveDashboard.UsersPage do
     users
   end
 
+  # TODO: Implement correct sorting for date values.
   defp sort(users, key, dir) do
     users
     |> Enum.sort_by(fn user -> Map.get(user, key) end)

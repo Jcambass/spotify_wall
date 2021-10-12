@@ -10,10 +10,6 @@ defmodule SpotifyWallWeb.Endpoint do
     signing_salt: "o6cMIQ4K"
   ]
 
-  socket "/socket", SpotifyWallWeb.UserSocket,
-    websocket: true,
-    longpoll: false
-
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
   # Serve at "/" the static files from "priv/static" directory.

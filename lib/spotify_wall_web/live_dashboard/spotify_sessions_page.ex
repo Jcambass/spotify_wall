@@ -27,13 +27,13 @@ defmodule SpotifyWallWeb.LiveDashboard.SpotifySessionsPage do
 
   defp columns do
     [
-      %{field: :id, header: "Session ID", sortable: :asc},
+      %{field: :id, header: "Session ID"},
       %{
         field: :pid,
         header: "Worker PID",
         format: &(&1 |> encode_pid() |> String.replace_prefix("PID", ""))
       },
-      %{field: :clients_count, header: "Clients count", sortable: :asc}
+      %{field: :clients_count, header: "Clients count"}
     ]
   end
 
