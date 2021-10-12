@@ -52,6 +52,10 @@ To start sharing again the `Start Sharing` feature can be used.
 
 ![image](https://user-images.githubusercontent.com/3436381/136982892-ece5ed55-7fb6-4d07-97b7-9c07d94e15d0.png)
 
+### Listening to Previews (WIP)
+
+For some songs you can play a preview of the song by clicking the cover image.
+
 ## Hosted Version
 
 Currently a hosted, free version can be used under [spotifywall.com](https://spotifywall.com).
