@@ -23,6 +23,8 @@ defmodule SpotifyWallWeb.AccountConnectionController do
       ) do
     # TODO: Explore using state to prevent CSSRF and store redirection url in cookie.
 
+    # TODO: This is not great since attackers could just put their refresh_token and another users nickname.
+    # This would cause the attacks activity to show up under the name and in the walls of the other user.
     user = Accounts.upsert_user(nickname, refresh_token)
 
     redirect_url =
