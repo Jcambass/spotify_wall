@@ -2,8 +2,6 @@
 
 Spotify Wall is a small side project mine which allows you to create groups for you and your friends or coworkers in order to share the current song you’re listing to on spotify.
 
-Try it out at [spotifywall.com](https://spotifywall.com)!
-
 ## How it works
 
 
@@ -55,11 +53,6 @@ To start sharing again the `Start Sharing` feature can be used.
 ### Listening to Previews (WIP)
 
 For some songs you can play a preview of the song by clicking the cover image.
-
-## Hosted Version
-
-Currently a hosted, free version can be used under [spotifywall.com](https://spotifywall.com).
-I don't plan to monetize this version but I might decide to shut it down one day, hence this being opensourced.
 
 ## To run SpotifyWall yourself
 
